@@ -79,11 +79,12 @@ class adminController{
             return res.status(401)
         }
         const accessToken = await this.adminCase.verifyRefreshToken(refreshToken)
-        if(accessToken !== undefined){
+        console.log("accessToken---------",accessToken)
+        if(accessToken !== null){
             console.log("Access token is",accessToken)
-            return res.status(200).json({accessToken})
+            return res.status(200).json({accessToken,refresh:true})
         }else{
-            return res.status(401).json({refresh:false})
+            return res.json({refresh:false,role:'admin'})
         }
 
     }

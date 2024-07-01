@@ -43,10 +43,12 @@ class vendorController{
             const {email,password} = req.body
             const result = await this.vendorCase.verifyLogin(email,password)
             console.log("result in verify verndrologin",result)
-            if(!result?.success){
+            if(!result?.success && !result?.passwordIncorrect){
                 console.log("ivde ethind pedikanda")
-                res.status(401).json({success:false,message:result?.message,accepted:false})
-            }else if(result.success){
+                res.json({success:false,message:result?.message,accepted:false})
+            }else if(result.passwordIncorrect){
+                res.json({passwordIncorrect:true})
+            }  else if(result.success){
                 const refreshToken = result.refreshToken
                 const accessToken = result.accessToken
                 res.cookie('refreshToken',refreshToken,{httpOnly:true})

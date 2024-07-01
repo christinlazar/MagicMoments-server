@@ -71,6 +71,7 @@ class userUsecase{
            let decodeToken =   this.JWTtoken.verifyJWT(token)
            console.log("decode token in saveUser in useCase",decodeToken)
            if(decodeToken){
+            console.log(decodeToken.otp,userOtp)
             if(decodeToken.otp == userOtp){
                 const currentTime:number = Date.now()
                 console.log("currentTime",currentTime)
@@ -131,12 +132,15 @@ class userUsecase{
     }
     async verifyRefreshToken(token:string){
         try {
-            const res = await this.JWTtoken.verifyRefreshToken(token)
-            if(res){
+            const res =  await this.JWTtoken.verifyRefreshToken(token)
+            console.log("chhhh",res)
+            if(res != null){
                 const userID = res.id 
                 const role = "user"
                 const token = await this.JWTtoken.createJWT(userID,role)
                 return token
+            }else if(res == null) {
+                return res
             }
         } catch (error) {
             console.log(error)
@@ -162,6 +166,46 @@ class userUsecase{
             )
             return {succes:true,token}
            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    async sendForgotmail(email:string){
+        try {
+            const isExistingUser = await this.iuserRepository.findByEmail(email)
+            if(isExistingUser){
+                const otp = await this.otpGenerate.generateOtp(4)
+                 this.sendMail.sendMail(isExistingUser.name,email,otp)
+                return {mailSend:true,otp}
+            }else{
+                return {mailSend:false}
+            }
+        } catch (error) {
+            
+        }
+    }
+
+    async verifyForgototp(realOtp:string,otp:string){
+        try {
+            if(realOtp === otp){
+                return {success:true}
+            }else{
+                return {success:false}
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async changepassword(newPassword:string,email:string){
+        try {
+            console.log("here in new password")
+            const hashedPassword = await this.hashpassword.createHash(newPassword)
+            console.log(hashedPassword)
+            const result = await this.iuserRepository.saveHashedPassword(hashedPassword,email)
+            console.log(result)
+             return {success:true}
         } catch (error) {
             console.log(error)
         }

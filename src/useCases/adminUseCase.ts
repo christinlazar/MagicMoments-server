@@ -81,15 +81,17 @@ class adminUseCase{
     }
     async verifyRefreshToken(token:string){
         try {
-            const res = await this.jwtToken.verifyRefreshToken(token)
-            if(res){
+            const res =  this.jwtToken.verifyRefreshToken(token)
+            console.log("resssss isss",res)
+            if(res != null){
+                console.log("refresh token is",res)
                 const userID = res.id 
-                const role = "admin"
-                const token = await this.jwtToken.createJWT(userID,role)
+                const role = 'admin'
+                const token =  this.jwtToken.createJWT(userID,role)
                 console.log("token is",token)
                 return token
-            }else{
-                return token
+            }else if(res == null){
+                return null
             }
         } catch (error) {
             console.log(error)

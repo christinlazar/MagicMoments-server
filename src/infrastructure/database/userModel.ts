@@ -23,7 +23,7 @@ const userSchema:Schema<User> = new Schema({
         default:false
     },
     phone:{
-        type:String
+        type:Number
     },
     createdAt:{
         type:Date,
