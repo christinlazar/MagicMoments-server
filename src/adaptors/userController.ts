@@ -54,7 +54,7 @@ class userController{
             const userOtp:string = req.body.otp
             const saveDone = await this.usercase.saveUser(token,userOtp)
             console.log(saveDone)
-            res.status(200).json(saveDone)
+            res.status(200).json({success:true})
         } catch (error) {
             console.log(error)
         }
@@ -83,10 +83,14 @@ class userController{
         const refreshToken = req.cookies.refreshToken;
         console.log("refreshtoken is",refreshToken)
         if(!refreshToken){
-            return res.status(401).json({refresh:false})
+            return 
         }
             const accessToken = await this.usercase.verifyRefreshToken(refreshToken)
-            return res.status(200).json({accessToken})
+            console.log("aaaaccessToken is",accessToken)
+            if(accessToken == null){
+              return res.json({refresh:false,role:'user'})
+            }
+            return res.status(200).json({accessToken,refresh:true})
     }
     async profileSubmit(req:Request,res:Response){
         console.log(req.body)
@@ -103,6 +107,51 @@ class userController{
             } catch (error) {
                 console.log(error)
             }
+    }
+
+    async  forgotMail(req:Request,res:Response){
+        try {
+            const {email} = req.body
+            const result =  await  this.usercase.sendForgotmail(email)
+            if(result?.mailSend){
+                res.cookie('forgotPasswordOtp',result?.otp,{httpOnly:true})
+                res.cookie('email',email,{httpOnly:true})
+                res.status(200).json({success:true,forgotmailSend:true})
+            }else{
+                res.status(404).json({success:false,forgotmailSend:false})
+            }
+        } catch (error) {
+            
+        }
+    }
+
+    async verifyForgotOtp(req:Request,res:Response){
+        try {
+            const {otp} = req.body
+            const realOtp = req.cookies.forgotPasswordOtp
+            
+            console.log(realOtp,"--")
+            const result = await this.usercase.verifyForgototp(realOtp,otp)
+           res.status(200).json({success:true,verified:true})
+        } catch (error) {
+            
+        }
+    }
+
+    async chnagePassword(req:Request,res:Response){
+        try {
+            console.log("getting here.")
+            console.log("reqbody is",req.body)
+            const {newPassword,newPasswordConfirm} = req.body
+            const email = req.cookies.email
+            console.log(email,newPassword)
+            const result = await this.usercase.changepassword(newPassword,email)
+            if(result?.success){
+                res.status(200).json({success:true})
+            }
+        } catch (error) {
+            
+        }
     }
 }
 export default userController;

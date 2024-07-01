@@ -3,8 +3,8 @@ import { Request,Response,NextFunction } from "express";
 import JWTtoken from "../utils/JWTtoken";
 
 const jwtTOKEN = new JWTtoken()
-const authenticateUser = (req:Request,res:Response,next:NextFunction) =>{
-    console.log("getting inside authenticate user")
+const authenticateVendor = (req:Request,res:Response,next:NextFunction) =>{
+    console.log("getting inside authenticate vendor")
     try {
         const authHeader = req.headers['authorization']
         console.log("auth header",authHeader)
@@ -20,10 +20,10 @@ const authenticateUser = (req:Request,res:Response,next:NextFunction) =>{
             next()
         }else{
             console.log("getting in else")
-            return res.status(401).json({success:false,role:'user'})
+            return res.status(401).json({success:false,role:'vendor'})
         }
     } catch (error) {
         console.log(error)
     }
 }   
-export default authenticateUser;
+export default authenticateVendor;

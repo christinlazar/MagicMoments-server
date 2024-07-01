@@ -38,10 +38,16 @@ class JWTtoken implements IJwttoken{
     }
     
     verifyRefreshToken(token:string):JwtPayload | null{
-        console.log("inside verifySrefreshToken in JWT")
-        const refreshToken = process.env.REFRESH_TOKEN_SECRET as string
-        const decode = jwt.verify(token,refreshToken) as JwtPayload
-        return decode
+        try {
+            console.log("inside verifySrefreshToken in JWT")
+            const refreshToken = process.env.REFRESH_TOKEN_SECRET as string
+            const decode = jwt.verify(token,refreshToken) as JwtPayload
+            console.log("dedcoede in verifying is",decode)
+            return decode
+        } catch (error:any) {
+            console.log(error.message)
+            return null
+        }
     }
 }
 

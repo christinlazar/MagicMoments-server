@@ -1,4 +1,4 @@
-import Vendor from "../domain/vendor";
+import Vendor, { AcceptanceStatus } from "../domain/vendor";
 import JWTtoken from "../infrastructure/utils/JWTtoken";
 import otpGenerate from "../infrastructure/utils/otpGenerate";
 import IVendorRepository from "./interface/IVendorRepository";
@@ -86,10 +86,12 @@ class vendorUseCase{
             if(isExistingVendor){
                 let isPasswordCorrect = await this.hashPassword.compare(password,isExistingVendor.password)
                 console.log("isPasswordCorrect",isPasswordCorrect)
-                if(isPasswordCorrect == true && isExistingVendor.isAccepted  == 'accepted'){
-                       const accessToken = await this.jwtToken.createJWT(isExistingVendor._id as string,'vendor')
-                       const refreshToken = await this.jwtToken.createRefreshToken(isExistingVendor._id as string)
+                if(isPasswordCorrect == true && isExistingVendor.isAccepted  == AcceptanceStatus.Accepted){
+                       const accessToken =  this.jwtToken.createJWT(isExistingVendor._id as string,'vendor')
+                       const refreshToken =  this.jwtToken.createRefreshToken(isExistingVendor._id as string)
                        return {success:true,accessToken,refreshToken}
+                }else if(isPasswordCorrect == false && isExistingVendor.isAccepted == AcceptanceStatus.Accepted){
+                        return {passwordIncorrect:true,message:'Password is incorrect'}
                 }else{
                     return {success:false,message:'Admin still havent accepted the request'}
                 }

@@ -23,5 +23,8 @@ router.post('/login',(req,res)=>controller.userLogin(req,res))
 router.post('/refresh-token',(req,res)=>controller.verifyRefreshToken(req,res))
 router.post('/profileSubmit',authenticateUser,(req,res)=>controller.profileSubmit(req,res))
 router.post('/resendOtp',(req,res)=>controller.resendOtp(req,res))
+router.post('/sendForgotMail',(req,res)=>controller.forgotMail(req,res))
+router.post('/verifyForgotOtp',(req,res)=>controller.verifyForgotOtp(req,res))
+router.post('/changePassword',(req,res)=>controller.chnagePassword(req,res))
 
 export default router
