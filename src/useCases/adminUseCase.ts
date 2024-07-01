@@ -1,16 +1,25 @@
 import IAdminRepository from "./interface/IAdminRepository"
 import hashPassword from "../infrastructure/utils/hashPassword"
 import JWTtoken from "../infrastructure/utils/JWTtoken"
+import acceptanceMail from "../infrastructure/utils/acceptanceMail"
+import rejectingMail from "../infrastructure/utils/rejectanceMail"
 
 class adminUseCase{
    private iAdminRepository:IAdminRepository
    private jwtToken:JWTtoken
+   private acceptancemail:acceptanceMail
+   private rejectingmail:rejectingMail
     constructor(
         iAdminRepository:IAdminRepository,
-        jwtToken:JWTtoken
+        jwtToken:JWTtoken,
+        acceptancemail:acceptanceMail,
+        rejectingmail:rejectingMail
     ){
         this.iAdminRepository = iAdminRepository
         this.jwtToken = jwtToken
+        this.acceptancemail = acceptancemail
+        this.rejectingmail = rejectingmail
+
     }
 
     async adminLogin(email:string,password:string){
@@ -84,6 +93,61 @@ class adminUseCase{
             }
         } catch (error) {
             console.log(error)
+        }
+    }
+
+    async findVendors(){
+        try {
+            const vendors = await this.iAdminRepository.findVendors()
+            return {success:true,vendors}
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async blockTheVendor(vendorId:string){
+        try {
+            const blockedVendor = await this.iAdminRepository.blockVendor(vendorId)
+            if(blockedVendor){
+                return blockedVendor
+            }
+        } catch (error) {
+            
+        }
+    }
+    async unblockTheVendor(vendorId:string){
+        try {
+            const ublockedVendor = await this.iAdminRepository.unblockVendor(vendorId)
+            if(ublockedVendor){
+                return ublockedVendor
+            }
+        } catch (error) {
+            
+        }
+    }
+
+    async acceptTheRequest(vendorId:string){
+        try {
+            const acceptedRequest = await this.iAdminRepository.acceptRequest(vendorId)
+           if(acceptedRequest){
+                this.acceptancemail.sendMail(acceptedRequest.companyName,acceptedRequest.companyEmail)
+           }
+            return acceptedRequest
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async rejectTheRequest(vendorId:string){
+        try {
+            const rejectedRequest = await this.iAdminRepository.rejectRequest(vendorId)
+            if(rejectedRequest){
+                 this.rejectingmail.sendMail(rejectedRequest.companyName,rejectedRequest.companyEmail)
+                await this.iAdminRepository.deleteVendor(vendorId)
+                return {rejected:true}
+            }
+        } catch (error) {
+            console.error(error)
         }
     }
 }

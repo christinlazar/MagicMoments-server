@@ -4,7 +4,7 @@ import crypto from 'crypto'
 
 
 class JWTtoken implements IJwttoken{
-    verifyJWT(token:string): jwt.JwtPayload | null {
+    verifyJWT(token:string): JwtPayload | null {
         try {
             console.log("inisde verifyJWT")
             const jwtKey = process.env.ACCESS_TOKEN_SECRET as string
@@ -21,7 +21,7 @@ class JWTtoken implements IJwttoken{
         console.log("inside create jwt")
         const jwtKey = process.env.ACCESS_TOKEN_SECRET
         if(jwtKey){
-            const token:string = jwt.sign({id:userID,role:role},jwtKey,{expiresIn:'5s'})
+            const token:string = jwt.sign({id:userID,role:role},jwtKey,{expiresIn:'5m'})
             return token
         }
         throw new Error('Jwt key is not defined')

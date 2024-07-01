@@ -64,6 +64,9 @@ class userController{
             console.log("getting in userLogin")
             const {email,password} = req.body
             const isValidUser = await this.usercase.userLogin(email,password)
+            if(isValidUser?.blocked){
+                return res.json({blocked:true})
+            }
             if(!isValidUser?.success){
                return  res.status(401).json({success:false})
             }

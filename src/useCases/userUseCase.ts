@@ -45,9 +45,9 @@ class userUsecase{
                 let token = jwt.sign(
                     {userInfo,otp,otpExpiresAt},
                     process.env.ACCESS_TOKEN_SECRET as string ,
-                    {expiresIn: '5m' }
+                    {expiresIn:'5m' }
                 )
-                const mail = await this.sendMail.sendMail(
+                const mail =  this.sendMail.sendMail(
                     userInfo.name,
                     userInfo.email,
                     otp
@@ -68,7 +68,7 @@ class userUsecase{
     async saveUser(token:string,userOtp:string){
         try {
             console.log("getting in save user")
-           let decodeToken = this.JWTtoken.verifyJWT(token)
+           let decodeToken =   this.JWTtoken.verifyJWT(token)
            console.log("decode token in saveUser in useCase",decodeToken)
            if(decodeToken){
             if(decodeToken.otp == userOtp){
@@ -105,16 +105,22 @@ class userUsecase{
                 console.log("getting in useCase")
                 const isValidUser = await this.iuserRepository.findByEmail(email)
                 if(isValidUser){
-                    console.log(isValidUser)
-                    console.log("getting in is validuser")
-                    let isValidPassword = await this.hashpassword.compare(password,isValidUser.password)
-                    console.log(isValidPassword)
-                    if(isValidPassword){
-                    console.log("getting in is validpwd")
-                        const accessToken = this.JWTtoken.createJWT(isValidUser._id as string,"user")
-                        const refreshToken = this.JWTtoken.createRefreshToken(isValidUser._id as string)
-                        console.log(accessToken,refreshToken)
-                        return {success:true,accessToken,refreshToken}
+                    if(isValidUser.isBlocked != true){
+                        console.log("not blocked")
+                        console.log(isValidUser)
+                        console.log("getting in is validuser")
+                        let isValidPassword = await this.hashpassword.compare(password,isValidUser.password)
+                        console.log(isValidPassword)
+                        if(isValidPassword){
+                        console.log("getting in is validpwd")
+                            const accessToken = this.JWTtoken.createJWT(isValidUser._id as string,"user")
+                            const refreshToken = this.JWTtoken.createRefreshToken(isValidUser._id as string)
+                            console.log(accessToken,refreshToken)
+                            return {success:true,accessToken,refreshToken}
+                        }
+                    }else{
+                        console.log("blocked")
+                        return {blocked:true,message:'user has been blocked'}
                     }
                 }else{
                     return {success:false}

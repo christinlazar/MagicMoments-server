@@ -4,6 +4,7 @@ import http from 'http'
 import userRoutes from '../routes/userRoute'
 import cookieParser from 'cookie-parser'
 import adminRoutes from '../routes/adminRoute'
+import vendorRoutes from '../routes/vendorRoute'
 export const createServer = () =>{
     try {
         const app = express()
@@ -17,6 +18,7 @@ export const createServer = () =>{
                 optionsSuccessStatus:200}))
         app.use('/api/user',userRoutes)
         app.use('/api/admin',adminRoutes)
+        app.use('/api/vendor',vendorRoutes)
         const server = http.createServer(app)
         return server;
     } catch (error) {

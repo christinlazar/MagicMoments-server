@@ -87,6 +87,62 @@ class adminController{
         }
 
     }
+
+    async bringVendors(req:Request,res:Response){
+        try {
+            const result = await this.adminCase.findVendors()
+            return res.status(200).send({success:true,vendors:result?.vendors})
+        } catch (error) {
+            
+        }
+    }
+
+    async blockvendor(req:Request,res:Response){
+        try {
+            const {vendorId} = req.body
+            const result = await this.adminCase.blockTheVendor(vendorId)
+            console.log(result)
+            res.status(200).json({success:true})
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async Unblockvendor(req:Request,res:Response){
+        try {
+            const {vendorId} = req.body
+            const result = await this.adminCase.unblockTheVendor(vendorId)
+            console.log(result)
+            res.status(200).json({success:true})
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async acceptVendorRequest(req:Request,res:Response){
+        try {
+            const {vendorId} = req.body
+            const result  = await this.adminCase.acceptTheRequest(vendorId)
+            if(result){
+                res.status(200).json({accepted:true})
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async rejectVendorRequest(req:Request,res:Response){
+        try {
+            const {vendorId} = req.body
+            const result = await this.adminCase.rejectTheRequest(vendorId)
+            if(result?.rejected){
+                res.status(200).json({rejected:true})
+            }
+        } catch (error) {
+            
+        }
+    }
+    
 }
 
 export default adminController

@@ -1,12 +1,18 @@
+export enum AcceptanceStatus {
+    Requested = 'requested',
+    Accepted = 'accepted',
+    Rejected = 'rejected'
+}
 interface Vendor{
-    companyName:string,
-    contactPerson:string,
-    companyEmail:string,
-    PhoneNumber:string,
-    companyLocation:string,
-    password:string,
-    createdAt:Date,
-    isBlocked:boolean
+    _id?:string;
+    companyName:string;
+    companyEmail:string;
+    companyLocation:string;
+    password:string;
+    createdAt:Date;
+    category:string;
+    isAccepted:AcceptanceStatus;
+    isBlocked:boolean;
 }
 
 export default Vendor

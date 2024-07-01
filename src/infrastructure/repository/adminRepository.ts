@@ -4,7 +4,9 @@ import Admin from "../../domain/admin";
 import { AdminModel } from "../database/adminModel";
 import User from "../../domain/user";
 import { userModel } from "../database/userModel";
-
+import Vendor from "../../domain/vendor";
+import vendorModel from "../database/vendorModel";
+import { AcceptanceStatus } from "../../domain/vendor";
 
 class adminRepository implements IAdminRepository{
     async findByEmail(email: string):Promise<Admin | null> {
@@ -43,6 +45,43 @@ class adminRepository implements IAdminRepository{
         }else{
             return null
         }
+    }
+    async findVendors(): Promise<Vendor[] | null> {
+        const vendors = await vendorModel.find({})
+        return vendors
+    }
+
+     async blockVendor(vendorId: string): Promise<Vendor | null> {
+        const blocked = await vendorModel.findOneAndUpdate({_id:vendorId},{$set:{isBlocked:true}}) 
+        if(blocked){
+            return blocked
+        }else{
+            return null
+        }
+    }
+
+     async unblockVendor(vendorId: string): Promise<Vendor | null> {
+        const unblocked = await vendorModel.findOneAndUpdate({_id:vendorId},{$set:{isBlocked:false}})
+        if(unblocked){
+            return unblocked
+        }else{
+            return null
+        }
+    }
+
+     async acceptRequest(vendorId: string): Promise<Vendor | null> {
+        const acceptedRequest = await vendorModel.findOneAndUpdate({_id:vendorId},{$set:{isAccepted:AcceptanceStatus.Accepted}})
+        return acceptedRequest
+    }
+
+     async rejectRequest(vendorId: string): Promise<Vendor | null> {
+        const rejectRequest = await vendorModel.findOneAndUpdate({_id:vendorId},{$set:{isAccepted:AcceptanceStatus.Rejected}})
+        return rejectRequest
+    }
+
+     async deleteVendor(vendorId: string): Promise<Vendor | null> {
+        const deletedVendor = await vendorModel.findOneAndDelete({_id:vendorId})
+        return deletedVendor
     }
 }
 
