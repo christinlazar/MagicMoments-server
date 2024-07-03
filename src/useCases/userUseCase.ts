@@ -92,7 +92,7 @@ class userUsecase{
                 }
             }else{
                 console.log("otp is not correct")
-                return{success:false,message:"Entered otp is not correct"}
+                return{success:false,incorrectOtp:true,message:"Entered otp is not correct"}
             }
            }else{
             return {success:false,message:'session has been expired,please register again',goback:true}

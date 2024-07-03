@@ -10,10 +10,13 @@ class vendorController{
 
     async verifyEmail(req:Request,res:Response){
         try {
+            console.log("ivde ethyarnu")
             const vendorInfo = req.body
             const result = await this.vendorCase.findUser(vendorInfo)
             if(result?.data.data){
-                res.status(409).json({success:false,message:'Vendor already exists'})
+                console.log("usere kityarn");
+                
+                res.json({success:false,message:'Vendor already exists',vendorExists:true})
             }else{
                 res.status(200).json({success:true,message:'otp sended successfully',token:result?.data.token})
             }
@@ -29,9 +32,12 @@ class vendorController{
             let token = req.headers.authorization?.split(' ')[1] as string
             const callToSaveVendor = await this.vendorCase.saveVendor(token,otp)
             if(callToSaveVendor?.success){
-                res.status(200).json({success:true})
-            }else{
-                res.json({session:false})
+                res.json({success:true})
+            }else if(callToSaveVendor?.success == false){
+                res.json({success:false,otp:false})
+            }
+            else if(callToSaveVendor?.expired){
+                res.json({expired:true})
             }
         } catch (error) {
             console.error(error)
@@ -59,6 +65,22 @@ class vendorController{
             console.error(error)
         }
     }
+
+    async vendorresendOtp (req:Request,res:Response){
+        try {
+            console.log(req.headers)
+           const token = req.headers.authorization?.split(' ')[1]
+            const result = await this.vendorCase.vendorVerifyToResend(token as string)
+            const resendedToken:string | undefined = result?.token
+            console.log(resendedToken)
+            if(result?.expired){
+                return res.json({success:false,expired:true})
+            }
+            res.status(200).json({success:true,token:resendedToken})
+        } catch (error) {
+            console.log(error)
+        }
+}
     
 }
 

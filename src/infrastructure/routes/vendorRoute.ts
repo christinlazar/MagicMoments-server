@@ -20,6 +20,7 @@ const controller = new vendorController(vendorCase)
 router.post('/vendorVerifyEmail',(req,res)=>controller.verifyEmail(req,res))
 router.post('/vendorVerifyOtp',(req,res)=>controller.verifyVendorOtp(req,res))
 router.post('/vendorLogin',(req,res)=>controller.verifyVendorLogin(req,res))
+router.post('/vendorResendOtp',(req,res)=>controller.vendorresendOtp(req,res))
 
 
 export default router

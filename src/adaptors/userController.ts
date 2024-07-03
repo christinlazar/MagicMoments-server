@@ -54,6 +54,11 @@ class userController{
             const userOtp:string = req.body.otp
             const saveDone = await this.usercase.saveUser(token,userOtp)
             console.log(saveDone)
+            if(saveDone?.incorrectOtp){
+               return res.json({incorrectOtp:true})
+            }else if(saveDone?.goback){
+                return res.json({expired:true})
+            }
             res.status(200).json({success:true})
         } catch (error) {
             console.log(error)

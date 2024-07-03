@@ -25,10 +25,7 @@ const userSchema:Schema<User> = new Schema({
     phone:{
         type:Number
     },
-    createdAt:{
-        type:Date,
-        default:Date.now()
-    }
-});
+
+},{timestamps:true});
 const userModel : Model<User> = mongoose.model<User>('User',userSchema)
 export {userModel}
