@@ -12,6 +12,7 @@ interface Vendor{
     createdAt:Date;
     category:string;
     isAccepted:AcceptanceStatus;
+    photos:string[];
     isBlocked:boolean;
 }
 

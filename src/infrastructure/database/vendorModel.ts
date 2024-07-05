@@ -32,6 +32,9 @@ isAccepted:{
     enum:Object.values(AcceptanceStatus),
     default:AcceptanceStatus.Requested
 },
+photos:{
+    type:[]
+},
 isBlocked:{
     type:Boolean,
     default:false
