@@ -1,7 +1,9 @@
 import { Request,Response } from "express";
 import Vendor from "../domain/vendor";
 import vendorUseCase from "../useCases/vendorUseCase";
-
+// interface MulterRequest extends Request{
+//     file : any
+// }
 class vendorController{
     private vendorCase : vendorUseCase
     constructor(vendorCase:vendorUseCase){
@@ -80,7 +82,15 @@ class vendorController{
         } catch (error) {
             console.log(error)
         }
-}
+    }
+
+    async addPhotographs (req:Request,res:Response){
+        try {
+           console.log(req.files)
+        } catch (error) {
+            console.error(error)
+        }
+    }
     
 }
 
