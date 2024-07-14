@@ -13,6 +13,7 @@ interface Vendor{
     category:string;
     isAccepted:AcceptanceStatus;
     photos:string[];
+    videos:string[];
     isBlocked:boolean;
 }
 

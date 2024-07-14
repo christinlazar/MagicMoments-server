@@ -97,6 +97,7 @@ class userController{
             }
             return res.status(200).json({accessToken,refresh:true})
     }
+    
     async profileSubmit(req:Request,res:Response){
         console.log(req.body)
         console.log("submitteddd")

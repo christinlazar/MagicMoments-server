@@ -84,9 +84,57 @@ class vendorController{
         }
     }
 
+    async verifyRefreshToken(req:Request,res:Response){
+        console.log("inside verifyrefresh in vendorController")
+        const refreshToken = req.cookies.refreshToken;
+        console.log("refreshtoken of vendor is",refreshToken)
+        if(!refreshToken){
+            return 
+        }
+            const vendorAccessToken = await this.vendorCase.verifyRefreshToken(refreshToken)
+            console.log("aaaaccessToken of vendor is",vendorAccessToken)
+            if(vendorAccessToken == null){
+              return res.json({refresh:false,role:'vendor'})
+            }
+            return res.status(200).json({vendorAccessToken,refresh:true})
+    }
+
     async addPhotographs (req:Request,res:Response){
         try {
-           console.log(req.files)
+            console.log("getting in backend")
+          if(!req.files){
+            return res.json({success:false,message:'No files to upload'})
+          }
+          let token = req.headers.authorization?.split(' ')[1] as string
+          const urls = (req.files as unknown as Express.Multer.File[]).map((file:any)=>file.path)
+          console.log("token is",token)
+          console.log(urls)
+          const result = await this.vendorCase.addPhotosInDB(urls,token)
+          if(result?.success){
+                return res.status(200).json({success:true,pushed:true})
+          }
+        //   else if(result?.success == false && result.refresh){
+        //         return res.status(401).json({success:false,role:'vendor'})
+        //   }
+          else{
+            return res.json({success:false,pushed:false})
+          }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async addVideographs(req:Request,res:Response){
+        try {
+            console.log("reached backed to save videographs")
+            console.log("req.files is",req.files)
+            const token = req.headers.authorization?.split(' ')[1] as string
+            const videoFiles = req.files as unknown as Express.Multer.File[];
+            const result = await this.vendorCase.addVideosInDB(videoFiles,token)
+            console.log(result)
+            if(result?.success){
+                return res.status(200).json({success:true,pushed:true})
+            }
         } catch (error) {
             console.error(error)
         }

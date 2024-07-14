@@ -28,6 +28,28 @@ class vendorRepository implements IVendorRepository{
             return null
         }
     }
+
+    async  savePhotos(urls:string[],vendorId:string): Promise<Vendor | null> {
+        try {
+            console.log("urls is" ,urls)
+            const vendor = await vendorModel.findOneAndUpdate({_id:vendorId},{$push:{photos:{$each:urls}}},{new:true})
+            return vendor
+        } catch (error) {
+            console.error(error)
+            return null
+        }
+    }
+
+    async saveVideos(urls:string[],vendorId:string):Promise<Vendor | null> {
+        try {
+            console.log("video urls are",urls)
+            const vendor = await vendorModel.findOneAndUpdate({_id:vendorId},{$push:{videos:{$each:urls}}},{new:true})
+            return vendor
+        } catch (error) {
+            console.error(error)
+            return null
+        }
+    }
 }
 
 export default vendorRepository

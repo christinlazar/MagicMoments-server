@@ -33,7 +33,10 @@ isAccepted:{
     default:AcceptanceStatus.Requested
 },
 photos:{
-    type:[]
+    type:[String]
+},
+videos:{
+    type:[String]
 },
 isBlocked:{
     type:Boolean,

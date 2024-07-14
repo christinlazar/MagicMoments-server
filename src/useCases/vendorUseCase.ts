@@ -5,6 +5,7 @@ import IVendorRepository from "./interface/IVendorRepository";
 import sendMail from "../infrastructure/utils/sendMail";
 import hashPassword from "../infrastructure/utils/hashPassword";
 import jwt from 'jsonwebtoken'
+import cloudinary from "../infrastructure/utils/cloudinary";
 
 class vendorUseCase{
     private ivendorRepository:IVendorRepository
@@ -132,6 +133,69 @@ class vendorUseCase{
            }
         } catch (error) {
             console.log(error)
+        }
+    }
+
+
+    async verifyRefreshToken(token:string){
+        try {
+            const res =  await this.jwtToken.verifyRefreshToken(token)
+            console.log("chhhh",res)
+            if(res != null){
+                const userID = res.id 
+                const role = "vendor"
+                const token = await this.jwtToken.createJWT(userID,role)
+                return token
+            }else if(res == null) {
+                return res
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    async addPhotosInDB(urls:string[],token:string){
+        try {
+           const decodedToken = await this.jwtToken.verifyJWT(token)
+           console.log("decoded Token issssssssss",decodedToken)
+           if(!decodedToken){
+            return {success:false,refresh:true}
+           }
+           const vendorId = decodedToken?.id
+           const res = await this.ivendorRepository.savePhotos(urls,vendorId)
+           console.log("res after pushing photos",res)
+           return {success:true}
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async addVideosInDB(videoFiles:Express.Multer.File[],token:string){
+        try {
+            const decoded = await this.jwtToken.verifyJWT(token)
+            if(decoded == null){
+                return
+            }
+            const vendorId = decoded.id
+            const uploadVideos = videoFiles.map((file)=>
+                cloudinary.uploader.upload(file.path,{
+                    resource_type:'video',
+                    chunk_size: 6000000,
+                    max_bytes: 1000000000 
+                })
+            )
+            console.log("uploadVideos =>",uploadVideos)
+            const results = await Promise.all(uploadVideos);
+            const videoUrls =  results.map((result)=> result.secure_url)
+            console.log("videoUrls => ",videoUrls)
+            const res = await this.ivendorRepository.saveVideos(videoUrls,vendorId)
+            console.log("res in video db is",res)
+            if(res != null){
+                return {success:true}
+            }
+            return res
+        } catch (error) {
+            console.error(error)
         }
     }
 }

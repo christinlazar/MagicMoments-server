@@ -5,11 +5,13 @@ import userRoutes from '../routes/userRoute'
 import cookieParser from 'cookie-parser'
 import adminRoutes from '../routes/adminRoute'
 import vendorRoutes from '../routes/vendorRoute'
+import bodyParser from 'body-parser'
 export const createServer = () =>{
     try {
         const app = express()
         app.use(express.json())
         app.use(express.urlencoded({extended:true}))
+        app.use(bodyParser.json())
         app.use(cookieParser())
         app.use(cors({
                 origin:'http://localhost:3000',
