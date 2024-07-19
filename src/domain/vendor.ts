@@ -14,6 +14,11 @@ interface Vendor{
     isAccepted:AcceptanceStatus;
     photos:string[];
     videos:string[];
+    description:string;
+    phoneNumber:string;
+    startingPrice:string;
+    unAvailableDates:string[];
+    services:string[];
     isBlocked:boolean;
 }
 

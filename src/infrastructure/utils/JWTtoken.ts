@@ -8,6 +8,8 @@ class JWTtoken implements IJwttoken{
         try {
             console.log("inisde verifyJWT")
             const jwtKey = process.env.ACCESS_TOKEN_SECRET as string
+            console.log("jwtkey =>",jwtKey)
+            console.log("token =>",token)
             const decode = jwt.verify(token,jwtKey) as JwtPayload
             console.log("decode is",decode)
             return decode

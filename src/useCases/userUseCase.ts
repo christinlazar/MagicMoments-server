@@ -4,6 +4,8 @@ import otpGenerate from "../infrastructure/utils/otpGenerate";
 import IuserRepository from "./interface/IuserRepository";
 import sendMail from "../infrastructure/utils/sendMail";
 import hashPassword from "../infrastructure/utils/hashPassword";
+import IMakePayment from "./interface/IMakePayment";
+import makePayment from "../infrastructure/utils/payment";
 import jwt from 'jsonwebtoken'
 class userUsecase{
     private  iuserRepository:IuserRepository;
@@ -11,18 +13,22 @@ class userUsecase{
     private JWTtoken:JWTtoken
     private sendMail:sendMail
     private hashpassword:hashPassword
+    private makePayment:IMakePayment
     constructor(
         iuserRepository:IuserRepository,
         otpGenerate:otpGenerate,
         JWTtoken:JWTtoken,
         sendMail:sendMail,
-        hashPassword:hashPassword
+        hashPassword:hashPassword,
+        makepayment:makePayment
+
     ){
         this.iuserRepository = iuserRepository 
         this.otpGenerate = otpGenerate
         this.JWTtoken = JWTtoken
         this.sendMail = sendMail
         this.hashpassword = hashPassword
+        this.makePayment = makepayment
     }
 
     async findUser(userInfo:User){
@@ -208,6 +214,61 @@ class userUsecase{
              return {success:true}
         } catch (error) {
             console.log(error)
+        }
+    }
+
+
+    async getAllVendorsData(){
+        try {
+            console.log("In get all vendorsdata in vendorcase")
+            const vendors = await this.iuserRepository.getVendors() 
+            if(vendors != null || vendors != undefined){
+                return {success:true,data:vendors}
+            }
+        } catch (error) {
+            
+        }
+    }
+
+    async getThatVendor(vendorId:string){
+        try {
+            const vendor = await this.iuserRepository.getVendor(vendorId)
+            console.log("vendor",vendor)
+            if(vendor){
+                return {success:true,data:vendor}
+            }else{
+                return {success:false}
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async isBookingAvailable(date:string,vendorId:string,totalNoOfDays:string,token:string){
+        try {
+            const Token = await this.JWTtoken.verifyJWT(token)
+            const result = await this.iuserRepository.checkIsAvailable(date,vendorId)
+            if(result){
+                const userId = Token?.id
+                console.log(userId)
+                console.log(token)
+                const createBookingRequest = await this.iuserRepository.saveBookingRequest(userId,vendorId,date,totalNoOfDays)
+                return {success:false,booked:true}
+            }else{
+                return {success:true,booked:false}
+            }
+        } catch (error) {
+            
+        }
+    }
+
+    async makeBookingPayment(companyName:string | undefined,vendorId:string | undefined,amount:string | undefined,bodyData:any){
+        try {
+            const result =  await this.makePayment.makeThePayment(companyName,amount,bodyData)
+            console.log("result is",result)
+            return result
+        } catch (error) {
+            
         }
     }
 }

@@ -38,6 +38,23 @@ photos:{
 videos:{
     type:[String]
 },
+description:{
+    type:String,
+},
+phoneNumber:{
+    type:String,
+},
+startingPrice:{
+    type:String,
+},
+unAvailableDates:{
+    type:[String],
+    default:[]
+},
+services:{
+    type:[String],
+    default:[]
+},
 isBlocked:{
     type:Boolean,
     default:false

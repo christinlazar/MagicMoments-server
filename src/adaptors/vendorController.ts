@@ -92,6 +92,9 @@ class vendorController{
             return 
         }
             const vendorAccessToken = await this.vendorCase.verifyRefreshToken(refreshToken)
+            if(vendorAccessToken == null){
+                return {refresh:false,role:'vendor'}
+            }
             console.log("aaaaccessToken of vendor is",vendorAccessToken)
             if(vendorAccessToken == null){
               return res.json({refresh:false,role:'vendor'})
@@ -134,6 +137,86 @@ class vendorController{
             console.log(result)
             if(result?.success){
                 return res.status(200).json({success:true,pushed:true})
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async addBasicCompanyInfo(req:Request,res:Response){
+        try {
+            const {description,phoneNumber,startingPrice} = req.body
+            const formData = {
+                description:description,
+                phoneNumber:phoneNumber,
+                startingPrice:startingPrice
+            }
+            const token = req.headers.authorization?.split(' ')[1] as string
+            const result = await this.vendorCase.addCompanyInfo(token,formData)
+            console.log("result in addBasicInfo is",result)
+            if(result?.success){
+                res.status(200).json({success:true,added:true})
+            }else{
+                res.json({success:false,added:false})
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async getVendorData(req:Request,res:Response){
+        try {
+            console.log("In this vendordata")
+            const token = req.headers.authorization?.split(' ')[1] as string
+            console.log("token of vendor",token)
+            const result = await this.vendorCase.toGetVendorData(token)
+            console.log("result us",result)
+            if(result?.success){
+                res.status(200).json({success:true,data:result.data})
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async getAllVendors(req:Request,res:Response){
+        try {
+            console.log("gettinginAllVendors")
+            const result = await this.vendorCase.getAllVendorsData()
+            console.log("result of getallvendors",result)
+            if(result?.success){
+                res.status(200).json({success:true,data:result.data})
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    // async getvendor(req:Request,res:Response){
+    //     try {
+    //         const {vendorId} = req.body
+    //         console.log("req.body is",req.body)
+    //         const result = await this.vendorCase.getThatVendor(vendorId)
+    //         console.log("result of action",result)
+    //         if(result?.success){
+    //            res.status(200).json({success:true,data:result?.data})
+    //         }else{
+    //             res.json({success:false})
+    //         }
+    //     } catch (error) {
+    //         console.error(error)
+    //     }
+    // }
+
+    async addUnavailableDates(req:Request,res:Response){
+        try {
+            const {dates } = req.body
+            const token = req.headers.authorization?.split(' ')[1] as string
+            const result = await this.vendorCase.addTheDates(dates,token)
+            if(result?.success){
+                res.status(200).json({success:true})
+            }else{
+                res.status(400).json({success:false})
             }
         } catch (error) {
             console.error(error)

@@ -50,6 +50,61 @@ class vendorRepository implements IVendorRepository{
             return null
         }
     }
+
+     async saveCompanyInfo(vendorId: string, formData: any): Promise<Vendor | null> {
+        try {
+            const {description,phoneNumber,startingPrice} = formData
+            const vendor = await vendorModel.findOneAndUpdate({_id:vendorId},{$set:{phoneNumber:phoneNumber,description:description,startingPrice:startingPrice}})
+            return vendor
+        } catch (error) {
+            console.error(error)
+            return null
+        }
+    }
+
+    async getVendorData(vendorId: string): Promise<Vendor | null> {
+        try {
+            const vendor = await vendorModel.findOne({_id:vendorId})
+            return vendor
+        } catch (error) {
+            console.error(error)
+            return null
+        }
+    }
+
+    async  getVendors(): Promise< Vendor[] | null> {
+        try {
+            const vendors = await vendorModel.find({})
+            console.log("vendors in repo",vendors);
+            
+            return vendors
+        } catch (error) {
+            console.error(error)
+            return null
+        }
+    }
+
+    async  getVendor(vendorId: string): Promise<Vendor | null> {
+        try {
+            console.log("vendorId is",vendorId)
+            const vendor = await vendorModel.findOne({_id:vendorId})
+            return vendor
+        } catch (error) {
+            console.error(error)
+            return null
+        }
+    }
+
+    async addDates(dates: string[],vendorId:string): Promise<Vendor | null> {
+        try {
+            console.log("dates array is",dates)
+            const vendor = await vendorModel.findOneAndUpdate({_id:vendorId},{$push:{unAvailableDates:{$each:dates}}},{new:true})
+            return vendor
+        } catch (error) {
+            console.error(error)
+            return null
+        }
+    }
 }
 
 export default vendorRepository

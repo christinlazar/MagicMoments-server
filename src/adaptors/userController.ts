@@ -159,5 +159,68 @@ class userController{
             
         }
     }
+
+    async getAllVendors(req:Request,res:Response){
+        try {
+            console.log("gettinginAllVendors")
+            const result = await this.usercase.getAllVendorsData()
+            console.log("result of getallvendors",result)
+            if(result?.success){
+                res.status(200).json({success:true,data:result.data})
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async getvendor(req:Request,res:Response){
+        try {
+            const {vendorId} = req.body
+            console.log("req.body is",req.body)
+            const result = await this.usercase.getThatVendor(vendorId)
+            console.log("result of action",result)
+            if(result?.success){
+               res.status(200).json({success:true,data:result?.data})
+            }else{
+                res.json({success:false})
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async makepayment(req:Request,res:Response){
+        try {
+            const {companyName,vendorId , amount} = req.body
+            const result = await this.usercase.makeBookingPayment(companyName,vendorId,amount,req.body)
+            if(result){
+               res.status(200).json({success:true,result})
+            }
+        } catch (error) {
+            
+        }
+    }
+
+    async checkIsBookingAvailable(req:Request,res:Response){
+        try {
+            console.log(req.body)
+            const token = req.headers.authorization?.split(' ')[1] as string
+            const startingDate = req.body.date
+            const totalNoOfDays = req.body.noOfDays
+            const vendorId = req.body.vendorId
+            const result = await this.usercase.isBookingAvailable(startingDate,vendorId,totalNoOfDays,token)
+            if(result?.success){
+                res.status(200).json({success:true,booked:false})
+                
+            }else{
+                res.json({success:false,booked:true})
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    
 }
 export default userController;
+

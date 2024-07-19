@@ -198,6 +198,85 @@ class vendorUseCase{
             console.error(error)
         }
     }
+
+    async addCompanyInfo(token:string,formData:any){
+        try {
+            const verifiedToken = await this.jwtToken.verifyJWT(token)
+            if(verifiedToken !== null){
+                const vendorId = verifiedToken.id;
+                const addedDetails = await this.ivendorRepository.saveCompanyInfo(vendorId,formData)
+                console.log(addedDetails)
+                if(addedDetails){
+                    return {success:true} 
+                }
+            }else{
+                return {success:false}
+            }
+        } catch (error) {
+            
+        }
+    }
+
+    async toGetVendorData(token:string){
+        try {
+            console.log("in toGet VendorData")
+            const verifiedToken =  await this.jwtToken.verifyJWT(token)
+            console.log("verified token is",verifiedToken)
+            if(verifiedToken != null || verifiedToken != undefined){
+                console.log("getting in here innnn herre")
+                const vendorId = verifiedToken.id
+                const vendorData = await this.ivendorRepository.getVendorData(vendorId)
+                if(vendorData){
+                    return {success:true,data:vendorData}
+                }
+            }
+        } catch (error) {
+            
+        }
+    }
+
+    async getAllVendorsData(){
+        try {
+            console.log("In get all vendorsdata in vendorcase")
+            const vendors = await this.ivendorRepository.getVendors() 
+            if(vendors != null || vendors != undefined){
+                return {success:true,data:vendors}
+            }
+        } catch (error) {
+            
+        }
+    }
+
+    // async getThatVendor(vendorId:string){
+    //     try {
+    //         const vendor = await this.ivendorRepository.getVendor(vendorId)
+    //         console.log("vendor",vendor)
+    //         if(vendor){
+    //             return {success:true,data:vendor}
+    //         }else{
+    //             return {success:false}
+    //         }
+    //     } catch (error) {
+    //         console.error(error)
+    //     }
+    // }
+
+    async addTheDates(dates:string[],token:string){
+        try {
+            const isVerifiedToken = this.jwtToken.verifyJWT(token)
+            if(isVerifiedToken?.id){
+                const vendorId = isVerifiedToken.id
+            const result = this.ivendorRepository.addDates(dates,vendorId)
+            if(result != null || result != undefined){
+                return {success:true}
+            }
+            }else{
+                console.log("is Verified",isVerifiedToken)
+            }
+        } catch (error) {
+            
+        }
+    }
 }
 
 export default vendorUseCase

@@ -26,6 +26,11 @@ router.post('/vendorResendOtp',(req,res)=>controller.vendorresendOtp(req,res))
 router.post('/refresh-token',(req,res)=>controller.verifyRefreshToken(req,res))
 router.post('/addPhotos',authenticateVendor,upload.array('photos',10),(req,res)=>controller.addPhotographs(req,res))
 router.post('/addVideos',authenticateVendor,upload.array('videos'),(req,res)=>controller.addVideographs(req,res))
+router.post('/submitStoreDetials',authenticateVendor,(req,res)=>controller.addBasicCompanyInfo(req,res))
+router.get('/getVendorData',authenticateVendor,(req,res)=>controller.getVendorData(req,res))
+// router.get('/getAllVendors',authenticateVendor,(req,res)=>controller.getAllVendors(req,res))
+// router.post('/bringVendorDetial',(req,res)=>controller.getvendor(req,res))
+router.post('/unAvailableDates',authenticateVendor,(req,res)=>controller.addUnavailableDates(req,res))
 
 
 export default router

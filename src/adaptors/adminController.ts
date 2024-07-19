@@ -71,7 +71,7 @@ class adminController{
     }
 
     async verifyRefreshToken(req:Request,res:Response){
-        console.log("inside verifyrefresh in userController")
+        console.log("inside verifyrefresh in adminController")
         const refreshToken = req.cookies.refreshToken;
         console.log("refreshtoken is",refreshToken)
         if(!refreshToken){
