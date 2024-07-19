@@ -246,7 +246,7 @@ class userUsecase{
 
     async isBookingAvailable(date:string,vendorId:string,totalNoOfDays:string,token:string){
         try {
-            const Token = await this.JWTtoken.verifyJWT(token)
+            const Token =  this.JWTtoken.verifyJWT(token)
             const result = await this.iuserRepository.checkIsAvailable(date,vendorId)
             if(result){
                 const userId = Token?.id
