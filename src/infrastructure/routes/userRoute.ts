@@ -30,8 +30,11 @@ router.post('/verifyForgotOtp',(req,res)=>controller.verifyForgotOtp(req,res))
 router.post('/changePassword',(req,res)=>controller.chnagePassword(req,res))
 router.get('/getAllVendors',(req,res)=>controller.getAllVendors(req,res))
 router.post('/bringVendorDetial',(req,res)=>controller.getvendor(req,res))
-router.post('/stripe-payment',(req,res)=>controller.makepayment(req,res))
-router.post('/sendBookingRequest',(req,res)=>controller.checkIsBookingAvailable(req,res))
+router.post('/stripe-payment',authenticateUser,(req,res)=>controller.makepayment(req,res))
+router.post('/sendBookingRequest',authenticateUser,(req,res)=>controller.checkIsBookingAvailable(req,res))
+router.post('/isBookingAccepted',authenticateUser,(req,res)=>controller.checkIsBookingAccepted(req,res))
+router.post('/isBookingExisting',authenticateUser,(req,res)=>controller.isExistingBooking(req,res))
+router.get('/confirmPayment',(req,res)=>controller.verifyPayment(req,res))
 
 
 export default router

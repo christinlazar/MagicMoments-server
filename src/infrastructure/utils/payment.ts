@@ -2,6 +2,13 @@ const stripe = require('stripe')(process.env.STRIPE_PRIVATE_KEY  )
 import IMakePayment from '../../useCases/interface/IMakePayment'
 import dotenv from 'dotenv'
 dotenv.config()
+import axios,{AxiosInstance} from 'axios'
+
+
+const Api:AxiosInstance = axios.create({
+    baseURL:'http://localhost:5000/api',
+    withCredentials:true
+}) 
 
 class makePayment implements IMakePayment {
     async makeThePayment(companyName:string,amount:string | any,bodyData:any){
@@ -26,12 +33,12 @@ class makePayment implements IMakePayment {
         ]
         try {
            const session = await stripe.checkout.sessions.create({
-            success_url:`${process.env.SUCCESS_URL}`,
-            cancel_url : `${process.env.FAILED_URL}`,
+            success_url:`http://localhost:5000/api/user/confirmPayment` ,
+            cancel_url :`http://localhost:5000/api/user/paymentFailed`,
             line_items:line_items,
             mode:'payment'
            })
-              return session
+           return session
         } catch (error) {
             console.log("Error in payment",error)
         }

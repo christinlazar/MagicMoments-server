@@ -1,6 +1,13 @@
 import Vendor from '../../domain/vendor';
 import IVendorRepository from '../../useCases/interface/IVendorRepository';
 import vendorModel from '../database/vendorModel';
+import bookingModel from '../database/BookingRequests'
+import bookingInterface from '../../domain/bookingRequests';
+import User from '../../domain/user';
+import { userModel } from '../database/userModel';
+
+import { AcceptanceStatus } from '../../domain/vendor';
+import { Types } from 'mongoose';
 
 class vendorRepository implements IVendorRepository{
 
@@ -55,7 +62,9 @@ class vendorRepository implements IVendorRepository{
         try {
             const {description,phoneNumber,startingPrice} = formData
             const vendor = await vendorModel.findOneAndUpdate({_id:vendorId},{$set:{phoneNumber:phoneNumber,description:description,startingPrice:startingPrice}})
+            console.log("vendor",vendor);
             return vendor
+            
         } catch (error) {
             console.error(error)
             return null
@@ -64,6 +73,7 @@ class vendorRepository implements IVendorRepository{
 
     async getVendorData(vendorId: string): Promise<Vendor | null> {
         try {
+            console.log("get in getvendorData")
             const vendor = await vendorModel.findOne({_id:vendorId})
             return vendor
         } catch (error) {
@@ -105,6 +115,54 @@ class vendorRepository implements IVendorRepository{
             return null
         }
     }
+
+    async  getBookingRequests(vendorId:string): Promise< bookingInterface[] | null> {
+        try {
+            const bookingReqs = await bookingModel.find({vendorId:vendorId})
+            console.log("logging",bookingReqs);
+            
+            return bookingReqs
+        } catch (error) {
+            console.error(error)
+            return null
+        }
+    }
+
+    async acceptRequest(bookingId: string): Promise<bookingInterface | null> {
+        try {
+            const acceptedReq = await bookingModel.findOneAndUpdate({_id:bookingId},{$set:{bookingStatus:AcceptanceStatus.Accepted}},{new:true})
+            return acceptedReq
+        } catch (error) {
+            console.log(error)
+            return null
+        }
+    }
+
+    async addEventDate(eventDate: string, vendorId: string): Promise<Vendor | null> {
+        try {
+            console.log("in ADDeventdate");
+            console.log(vendorId)
+            const [year,month,day] = eventDate.split('-')
+            let newDate = `${day}/${month}/${year}`
+            console.log("newDate",newDate)
+            const vendor = await vendorModel.findOneAndUpdate({_id:vendorId},{$push:{unAvailableDates:newDate}},{new:true})
+            return vendor
+        } catch (error) {
+            console.error(error)
+            return null
+        }
+    }
+
+    async findUser(userId:Types.ObjectId | undefined): Promise<User | null> {
+        try {
+        const user = await userModel.findOne({_id:userId})
+        return user
+        } catch (error) {
+            console.log(error)
+            return null
+        }
+    }
+
 }
 
 export default vendorRepository

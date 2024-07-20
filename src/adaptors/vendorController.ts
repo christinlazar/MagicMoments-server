@@ -1,9 +1,9 @@
 import { Request,Response } from "express";
 import Vendor from "../domain/vendor";
 import vendorUseCase from "../useCases/vendorUseCase";
-// interface MulterRequest extends Request{
-//     file : any
-// }
+
+
+
 class vendorController{
     private vendorCase : vendorUseCase
     constructor(vendorCase:vendorUseCase){
@@ -220,6 +220,34 @@ class vendorController{
             }
         } catch (error) {
             console.error(error)
+        }
+    }
+
+    async getBookingRequests(req:Request,res:Response){
+        try {
+            const token = req.headers.authorization?.split(' ')[1] as string
+            const result = await this.vendorCase.getbookingRequests(token)
+            console.log("result in vendContr of bookingReq",result)
+            if(result?.success){
+                res.status(200).json({success:true,bookingData:result.bookingData})
+            }
+        } catch (error) {
+            
+        }
+    }
+
+    async acceptBookingrequest(req:Request,res:Response){
+        try {
+            console.log("came in acceptance");
+            const token = req.headers.authorization?.split(' ')[1] as string
+            const {bookingId} = req.body
+            const result = await this.vendorCase.acceptRequest(bookingId,token)
+            if(result?.success){
+                res.status(200).json({success:true,payNow:true})
+            }
+        } catch (error) {
+            console.log(error);
+            
         }
     }
     

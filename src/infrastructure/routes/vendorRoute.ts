@@ -9,14 +9,16 @@ import hashPassword from '../utils/hashPassword'
 import upload from '../utils/multerConfig'
 import cloudinary from '../utils/cloudinary'
 import authenticateVendor from '../middleware/vendorAuth'
+import bookingAcceptanceMail from '../utils/bookingAcceptanceMail'
 const repository = new vendorRepository()
 const otp = new otpGenerate()
 const jwt = new JWTtoken()
 const sendmail = new sendMail()
 const hashpassword = new hashPassword()
+const bookingAcceptance = new bookingAcceptanceMail()
 const router = express.Router()
 
-const vendorCase = new vendorUseCase(repository,otp,jwt,sendmail,hashpassword)
+const vendorCase = new vendorUseCase(repository,otp,jwt,sendmail,hashpassword,bookingAcceptance)
 const controller = new vendorController(vendorCase)
 
 router.post('/vendorVerifyEmail',(req,res)=>controller.verifyEmail(req,res))
@@ -31,6 +33,10 @@ router.get('/getVendorData',authenticateVendor,(req,res)=>controller.getVendorDa
 // router.get('/getAllVendors',authenticateVendor,(req,res)=>controller.getAllVendors(req,res))
 // router.post('/bringVendorDetial',(req,res)=>controller.getvendor(req,res))
 router.post('/unAvailableDates',authenticateVendor,(req,res)=>controller.addUnavailableDates(req,res))
+router.get('/getBookingRequests',authenticateVendor,(req,res)=>controller.getBookingRequests(req,res))
+router.post('/acceptBookingrequest',authenticateVendor,(req,res)=>controller.acceptBookingrequest(req,res))
+
+
 
 
 export default router

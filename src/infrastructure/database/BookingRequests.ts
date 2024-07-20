@@ -1,5 +1,6 @@
 import mongoose,{Schema,Model} from "mongoose";
 import bookingInterface from "../../domain/bookingRequests";
+import { AcceptanceStatus } from "../../domain/vendor";
 
 const bookingRequestSchema:Schema<bookingInterface> = new Schema({
         vendorId:{
@@ -12,6 +13,10 @@ const bookingRequestSchema:Schema<bookingInterface> = new Schema({
             ref:'User',
             required:true
         },
+        userName:{
+            type:String,
+            required:true
+        },
         startingDate:{
             type:String,
             required:true
@@ -19,8 +24,13 @@ const bookingRequestSchema:Schema<bookingInterface> = new Schema({
         noOfDays:{
             type:String,
             required:true
+        },
+        bookingStatus:{
+            type:String,
+            enum:Object.values(AcceptanceStatus),
+            default:AcceptanceStatus.Requested
         }
 },{timestamps:true})
 
-const bookingRequestModel : Model<bookingInterface> = mongoose.model<bookingInterface>('bookingRequestModel',bookingRequestSchema)
-export  {bookingRequestModel}
+const bookingRequestModel : Model<bookingInterface> = mongoose.model<bookingInterface>('bookingRequest',bookingRequestSchema)
+export  default bookingRequestModel

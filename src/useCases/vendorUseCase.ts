@@ -3,6 +3,7 @@ import JWTtoken from "../infrastructure/utils/JWTtoken";
 import otpGenerate from "../infrastructure/utils/otpGenerate";
 import IVendorRepository from "./interface/IVendorRepository";
 import sendMail from "../infrastructure/utils/sendMail";
+import bookingAcceptanceMail from "../infrastructure/utils/bookingAcceptanceMail";
 import hashPassword from "../infrastructure/utils/hashPassword";
 import jwt from 'jsonwebtoken'
 import cloudinary from "../infrastructure/utils/cloudinary";
@@ -13,18 +14,21 @@ class vendorUseCase{
     private jwtToken:JWTtoken
     private sendMail:sendMail
     private hashPassword:hashPassword
+    private bookingAcceptanceMail:bookingAcceptanceMail
     constructor(
         ivendorRepository:IVendorRepository,
         otpGenerate:otpGenerate,
         jwtToken:JWTtoken,
         sendMail:sendMail,
-        hashPassword:hashPassword
+        hashPassword:hashPassword,
+        bookingAcceptance:bookingAcceptanceMail
     ){
     this.ivendorRepository = ivendorRepository
     this.otpGenerate = otpGenerate
     this.jwtToken = jwtToken
     this.sendMail = sendMail
     this.hashPassword = hashPassword
+    this.bookingAcceptanceMail = bookingAcceptance
     }
     async findUser(vendorInfo:Vendor){
         try {
@@ -220,7 +224,7 @@ class vendorUseCase{
     async toGetVendorData(token:string){
         try {
             console.log("in toGet VendorData")
-            const verifiedToken =  await this.jwtToken.verifyJWT(token)
+            const verifiedToken =   this.jwtToken.verifyJWT(token)
             console.log("verified token is",verifiedToken)
             if(verifiedToken != null || verifiedToken != undefined){
                 console.log("getting in here innnn herre")
@@ -277,6 +281,54 @@ class vendorUseCase{
             
         }
     }
+
+    async getbookingRequests(token:string){
+        try {
+            const verifiedToken = await this.jwtToken.verifyJWT(token)
+            if(verifiedToken){
+                const vendorId = verifiedToken.id 
+                const result = await this.ivendorRepository.getBookingRequests(vendorId)
+                console.log(result)
+                if(result){
+                    return {success:true,bookingData:result}
+                }
+            }
+          
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    async acceptRequest(bookingId:string,token:string){
+        try {
+            console.log("innnnnnnnnnnnn accept");
+            
+            const result = await this.ivendorRepository.acceptRequest(bookingId)
+            const verifiedToken = await this.jwtToken.verifyJWT(token)
+            const vendorId = verifiedToken?.id
+            const userId = result?.userId
+            const user = await this.ivendorRepository.findUser(userId)
+            console.log("The user is",user)
+            console.log(vendorId)
+            console.log(verifiedToken?.id)
+            console.log("wanted result is",result)
+            console.log(result)
+            if(result != null){
+                const result2 = await this.ivendorRepository.addEventDate(result?.startingDate,vendorId)
+                if(result2 != null){
+                      this.bookingAcceptanceMail.sendMail(user?.name,user?.email)
+                    return {success:true}
+                }else{
+                    return {success:false}
+                }
+            }else{
+                return {success:false}
+            }
+        } catch (error) {
+            
+        }
+    }
+
 }
 
 export default vendorUseCase

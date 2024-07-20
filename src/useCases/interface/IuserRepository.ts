@@ -8,7 +8,10 @@ interface IuserRepository{
     getVendors():Promise <Vendor[] | null >
     getVendor(vendorId:string):Promise<Vendor | null>
     checkIsAvailable(date:string,vendorId:string ):Promise< boolean | undefined >
-    saveBookingRequest(userId:string,vendorId:string,startingDate:string,noOfDays:string) : Promise<bookingInterface | null>
+    saveBookingRequest(userId:string,vendorId:string,startingDate:string,noOfDays:string,userName:string | undefined) : Promise<bookingInterface | null>
+    findUser(userId:string):Promise< User | null>
+    isBookingAccepted(userId:string,vendorId:string):Promise<bookingInterface | null>
+    isBookingExisting(userId:string,vendorId:string):Promise<bookingInterface | null>
 }
 
 export default IuserRepository;

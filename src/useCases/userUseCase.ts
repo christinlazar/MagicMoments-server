@@ -247,18 +247,55 @@ class userUsecase{
     async isBookingAvailable(date:string,vendorId:string,totalNoOfDays:string,token:string){
         try {
             const Token =  this.JWTtoken.verifyJWT(token)
+            const user = await this.iuserRepository.findUser(Token?.id)
+            console.log("The user who requested is",user)
+            console.log("TOKEN IN IS BOOKING AVAILABLE",Token)
             const result = await this.iuserRepository.checkIsAvailable(date,vendorId)
+            console.log("is included",result)
             if(result){
                 const userId = Token?.id
+                const userName = user?.name
                 console.log(userId)
-                console.log(token)
-                const createBookingRequest = await this.iuserRepository.saveBookingRequest(userId,vendorId,date,totalNoOfDays)
-                return {success:false,booked:true}
+                console.log(Token)
+                const createBookingRequest = await this.iuserRepository.saveBookingRequest(userId,vendorId,date,totalNoOfDays,userName)
+                console.log("created booking request is",createBookingRequest)
+                return {success:true,reqSend:true}
             }else{
-                return {success:true,booked:false}
+                return {success:false,reqSend:false}
             }
         } catch (error) {
             
+        }
+    }
+
+    async isbookingAccepted(token:string,vendorId :string){
+        try {
+            const isValidToken =  this.JWTtoken.verifyJWT(token)
+            const userId = isValidToken?.id
+            const result = await this.iuserRepository.isBookingAccepted(userId,vendorId)
+            if(result != null){
+                console.log("result before pay is",result)
+                return {success:true,result}
+            }else{
+                console.log("result in else",result)
+                return null
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async isbookingExisting(token:string,vendorId:string){
+        try{
+            const isValidToken = this.JWTtoken.verifyJWT(token)
+            const userId = isValidToken?.id
+            const result = await this.iuserRepository.isBookingExisting(userId,vendorId)
+            console.log("existing booking",result)
+            if(result != null){
+                return {success:false}
+            }
+        }catch(error){
+            console.log(error)
         }
     }
 

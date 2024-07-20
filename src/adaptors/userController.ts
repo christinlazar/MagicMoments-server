@@ -204,22 +204,64 @@ class userController{
     async checkIsBookingAvailable(req:Request,res:Response){
         try {
             console.log(req.body)
+            const {bookingData} = req.body
+            console.log("bdata",bookingData);
+            
             const token = req.headers.authorization?.split(' ')[1] as string
-            const startingDate = req.body.date
-            const totalNoOfDays = req.body.noOfDays
-            const vendorId = req.body.vendorId
+            const startingDate = bookingData.date
+            const totalNoOfDays = bookingData.noOfDays
+            const vendorId = bookingData.vendorId
             const result = await this.usercase.isBookingAvailable(startingDate,vendorId,totalNoOfDays,token)
             if(result?.success){
-                res.status(200).json({success:true,booked:false})
-                
+                res.status(200).json({success:true,reqSend:true})    
             }else{
-                res.json({success:false,booked:true})
+                res.json({success:false,reqSend:false})
             }
         } catch (error) {
             console.error(error)
         }
     }
 
+
+    async checkIsBookingAccepted(req:Request,res:Response){
+        try {
+            console.log("Insideeee is booking aacepetd")
+            const {vendorId} = req.body
+            const token = req.headers.authorization?.split(' ')[1] as string
+            const result:any = await this.usercase.isbookingAccepted(token,vendorId)
+            console.log("result issssssssssss",result)
+            if(result != null){
+                res.status(200).json({success:true,result:result.result})
+            }else{
+                res.json({success:false})
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+    async isExistingBooking(req:Request,res:Response){
+        try {
+            console.log("in existing bookinggggg")
+            const {vendorId} = req.body
+            const token = req.headers.authorization?.split(' ')[1] as string
+            const result = await this.usercase.isbookingExisting(token,vendorId)
+            if(result?.success == false){
+                res.status(400).json({success:false})
+            }else{
+                res.status(200).json({success:true})
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async verifyPayment(req:Request,res:Response){
+        try {
+            console.log("gonna do confirm payment")
+        } catch (error) {
+            
+        }
+    }
     
 }
 export default userController;
