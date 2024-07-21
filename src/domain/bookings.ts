@@ -1,15 +1,34 @@
-import { AcceptanceStatus } from "./vendor"
+// import { AcceptanceStatus } from "./vendor"
 
-export enum PaymentStaus {
+export enum PaymentStatus {
     Pending = 'pending',
     Completed = 'completed'
+}
 
-}
-interface bookings{
-    _id?:string,
+// interface bookings{
+//     _id?:string,
+//     clientName:string,
+//     eventDate:string,
+//     noOfDays:string,
+//     bookingStatus:AcceptanceStatus,
+//     paymentDate:Date
+// }
+import {Document,Types} from "mongoose"
+// export enum AcceptanceStatus {
+//     Requested = 'requested',
+//     Accepted = 'accepted',
+//     Rejected = 'rejected'
+// }
+
+interface bookingInt extends Document{
+    _id?:string;
+    vendorId:Types.ObjectId,
+    userId:Types.ObjectId,
     clientName:string,
-    eventDate:string,
+    startingDate:string,
     noOfDays:string,
-    bookingStatus:AcceptanceStatus,
-    paymentDate:Date
+    amountPaid?:string,
+    paymentStatus:PaymentStatus
 }
+
+export default bookingInt

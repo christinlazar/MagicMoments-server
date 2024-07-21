@@ -1,7 +1,8 @@
 import IJwttoken from "../../useCases/interface/IJWTtoken";
 import jwt ,{JwtPayload} from 'jsonwebtoken'
 import crypto from 'crypto'
-
+import dotenv from 'dotenv'
+dotenv.config()
 
 class JWTtoken implements IJwttoken{
     verifyJWT(token:string): JwtPayload | null {
@@ -29,7 +30,7 @@ class JWTtoken implements IJwttoken{
         throw new Error('Jwt key is not defined')
     }
 
-    createRefreshToken(userID:string):string{
+    createRefreshToken(userID:string | undefined):string{
         console.log("getting in createrefresh")
         const refreshTokenKey = process.env.REFRESH_TOKEN_SECRET
         if(refreshTokenKey){

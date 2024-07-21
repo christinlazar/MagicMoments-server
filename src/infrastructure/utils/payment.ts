@@ -11,7 +11,7 @@ const Api:AxiosInstance = axios.create({
 }) 
 
 class makePayment implements IMakePayment {
-    async makeThePayment(companyName:string,amount:string | any,bodyData:any){
+    async makeThePayment(companyName:string,amount:string | any,bodyData:any,bookingData:any){
         console.log("bodyData is",bodyData)
         const companyname = bodyData.companyName
         const vendorId = bodyData.vendorId
@@ -36,7 +36,7 @@ class makePayment implements IMakePayment {
             success_url:`http://localhost:5000/api/user/confirmPayment` ,
             cancel_url :`http://localhost:5000/api/user/paymentFailed`,
             line_items:line_items,
-            mode:'payment'
+            mode:'payment', 
            })
            return session
         } catch (error) {

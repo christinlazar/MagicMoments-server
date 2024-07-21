@@ -1,7 +1,8 @@
 import {Request,Response} from 'express'
 import User from '../domain/user'
 import userUsecase from '../useCases/userUseCase'
-
+// import Api from '../infrastructure/utils/axios'
+import axios from 'axios'
 class userController{
     private usercase:userUsecase
     constructor(usercase:userUsecase){
@@ -77,6 +78,7 @@ class userController{
             }
             const accessToken= isValidUser?.accessToken
             const refreshToken = isValidUser?.refreshToken
+            console.log("refreshoken",refreshToken)
             res.cookie('refreshToken',refreshToken,{httpOnly:true})
             res.status(200).json({accessToken,success:true})
         } catch (error) {
@@ -86,9 +88,10 @@ class userController{
     async verifyRefreshToken(req:Request,res:Response){
         console.log("inside verifyrefresh in userController")
         const refreshToken = req.cookies.refreshToken;
+        console.log(req.cookies)
         console.log("refreshtoken is",refreshToken)
         if(!refreshToken){
-            return 
+            return res.json({refresh:false,role:'user'})
         }
             const accessToken = await this.usercase.verifyRefreshToken(refreshToken)
             console.log("aaaaccessToken is",accessToken)
@@ -191,10 +194,13 @@ class userController{
 
     async makepayment(req:Request,res:Response){
         try {
-            const {companyName,vendorId , amount} = req.body
-            const result = await this.usercase.makeBookingPayment(companyName,vendorId,amount,req.body)
+            console.log("res.cookie",req.cookies)
+            const {companyName,vendorId ,amount,bookingData} = req.body
+            const result = await this.usercase.makeBookingPayment(companyName,vendorId,amount,req.body,bookingData)
             if(result){
-               res.status(200).json({success:true,result})
+                res.cookie('bookingId',bookingData?._id,{httpOnly:true})
+                res.cookie('Amount',amount,{httpOnly:true})
+               res.status(200).json({success:true,result,bookingData})
             }
         } catch (error) {
             
@@ -206,7 +212,6 @@ class userController{
             console.log(req.body)
             const {bookingData} = req.body
             console.log("bdata",bookingData);
-            
             const token = req.headers.authorization?.split(' ')[1] as string
             const startingDate = bookingData.date
             const totalNoOfDays = bookingData.noOfDays
@@ -225,6 +230,7 @@ class userController{
 
     async checkIsBookingAccepted(req:Request,res:Response){
         try {
+            console.log("res.cookie",req.cookies)
             console.log("Insideeee is booking aacepetd")
             const {vendorId} = req.body
             const token = req.headers.authorization?.split(' ')[1] as string
@@ -258,8 +264,16 @@ class userController{
     async verifyPayment(req:Request,res:Response){
         try {
             console.log("gonna do confirm payment")
+            const bookingId = req.cookies.bookingId
+            const amountPaid = req.cookies.amount
+            console.log("bookingId is",bookingId);
+            const result = await this.usercase.confirmPayment(bookingId,amountPaid)
+            console.log("gert here after confirming payment")
+            if(result?.success){
+               res.redirect('http://localhost:3000/paymentSuccess')   
+            }
         } catch (error) {
-            
+            console.error(error)
         }
     }
     

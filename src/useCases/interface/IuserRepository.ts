@@ -1,6 +1,8 @@
 import User from "../../domain/user";
 import Vendor from "../../domain/vendor";
 import bookingInterface from "../../domain/bookingRequests";
+import bookingInt from "../../domain/bookings";
+import { Types } from "mongoose";
 interface IuserRepository{
     findByEmail(email:string,phone?:number):Promise<User | null>,
     saveUser(user:User) : Promise<User | null>
@@ -11,7 +13,8 @@ interface IuserRepository{
     saveBookingRequest(userId:string,vendorId:string,startingDate:string,noOfDays:string,userName:string | undefined) : Promise<bookingInterface | null>
     findUser(userId:string):Promise< User | null>
     isBookingAccepted(userId:string,vendorId:string):Promise<bookingInterface | null>
-    isBookingExisting(userId:string,vendorId:string):Promise<bookingInterface | null>
+    isBookingExisting(userId:string,vendorId:string | Types.ObjectId | Types.ObjectId):Promise<bookingInterface | null>
+    confirmBooking(bookingId:string,amountPaid:string):Promise<bookingInt | null | undefined>
 }
 
 export default IuserRepository;

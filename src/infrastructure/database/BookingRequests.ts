@@ -32,5 +32,5 @@ const bookingRequestSchema:Schema<bookingInterface> = new Schema({
         }
 },{timestamps:true})
 
-const bookingRequestModel : Model<bookingInterface> = mongoose.model<bookingInterface>('bookingRequest',bookingRequestSchema)
-export  default bookingRequestModel
+const bookingRequestModel:Model<bookingInterface> = mongoose.model<bookingInterface>('bookingRequest',bookingRequestSchema)
+export default bookingRequestModel

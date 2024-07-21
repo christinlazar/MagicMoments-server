@@ -121,7 +121,8 @@ class userUsecase{
                         if(isValidPassword){
                         console.log("getting in is validpwd")
                             const accessToken = this.JWTtoken.createJWT(isValidUser._id as string,"user")
-                            const refreshToken = this.JWTtoken.createRefreshToken(isValidUser._id as string)
+                            const refreshToken = this.JWTtoken.createRefreshToken(isValidUser._id )
+                            console.log("refresh in userLogin is",refreshToken)
                             console.log(accessToken,refreshToken)
                             return {success:true,accessToken,refreshToken}
                         }
@@ -299,13 +300,26 @@ class userUsecase{
         }
     }
 
-    async makeBookingPayment(companyName:string | undefined,vendorId:string | undefined,amount:string | undefined,bodyData:any){
+    async makeBookingPayment(companyName:string | undefined,vendorId:string | undefined,amount:string | undefined,bodyData:any,bookingData:any){
         try {
-            const result =  await this.makePayment.makeThePayment(companyName,amount,bodyData)
+            const result =  await this.makePayment.makeThePayment(companyName,amount,bodyData,bookingData)
             console.log("result is",result)
             return result
         } catch (error) {
             
+        }
+    }
+
+    async confirmPayment(bookingId:string,amountPaid:string){
+        try {
+            const result = await this.iuserRepository.confirmBooking(bookingId,amountPaid)
+            if(result != null || result != undefined){
+                return {success:true}
+            }else{
+                return {success:false}
+            }
+        } catch (error) {
+            console.error(error)
         }
     }
 }

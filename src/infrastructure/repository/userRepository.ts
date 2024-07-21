@@ -4,7 +4,11 @@ import IuserRepository from "../../useCases/interface/IuserRepository";
 import Vendor from "../../domain/vendor";
 import vendorModel from "../database/vendorModel";
 import bookingInterface from "../../domain/bookingRequests";
-import bookingModel from '../database/BookingRequests'
+// import bookingRequestModel from '../database/BookingRequests'
+import bookingRequestModel from "../database/BookingRequests";
+import bookingModel from "../database/booking";
+import bookingInt from "../../domain/bookings";
+import { PaymentStatus } from "../../domain/bookings";
 class userRepository implements IuserRepository{
      async findByEmail(email:string,phone:number){
         try {
@@ -109,7 +113,7 @@ class userRepository implements IuserRepository{
                 startingDate,
                 noOfDays
             }
-            const bookingdata = new bookingModel(bookingData)
+            const bookingdata = new bookingRequestModel(bookingData)
             await bookingdata.save()
             return bookingdata
         } catch (error) {
@@ -120,7 +124,7 @@ class userRepository implements IuserRepository{
 
     async  isBookingAccepted(userId: string,vendorId:string): Promise<bookingInterface | null> {
         try {
-            const bookingData = await bookingModel.findOne({userId:userId,vendorId:vendorId})
+            const bookingData = await bookingRequestModel.findOne({userId:userId,vendorId:vendorId})
             return bookingData
         } catch (error) {
             console.error(error)
@@ -131,8 +135,32 @@ class userRepository implements IuserRepository{
     async  isBookingExisting(userId:string,vendorId:string): Promise<bookingInterface | null> {
         try {
             console.log("userIDDD is",userId)
-            const bookingData = await bookingModel.findOne({userId:userId,vendorId:vendorId})
+            const bookingData = await bookingRequestModel.findOne({userId:userId,vendorId:vendorId})
             return bookingData
+        } catch (error) {
+            console.error(error)
+            return null
+        }
+    }
+
+    async confirmBooking(bookingId: string,amountPaid:string): Promise<bookingInt | null | undefined> {
+        try {
+            const bookingData = await bookingRequestModel.findOne({_id:bookingId})
+            const dataToConfirmBooking = {
+                vendorId:bookingData?.vendorId,
+                userId:bookingData?.userId,
+                clientName:bookingData?.userName,
+                startingDate:bookingData?.startingDate,
+                noOfDays:bookingData?.noOfDays,
+                amountPaid:amountPaid,
+                paymentStatus:PaymentStatus.Completed
+            }
+            const data = new bookingModel(dataToConfirmBooking)
+            const bookingDataAfterConfirm = await data.save()
+            if(bookingDataAfterConfirm){
+                await bookingRequestModel.findByIdAndDelete({_id:bookingId})
+                return bookingDataAfterConfirm
+            }
         } catch (error) {
             console.error(error)
             return null

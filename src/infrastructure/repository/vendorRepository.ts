@@ -1,7 +1,8 @@
 import Vendor from '../../domain/vendor';
 import IVendorRepository from '../../useCases/interface/IVendorRepository';
 import vendorModel from '../database/vendorModel';
-import bookingModel from '../database/BookingRequests'
+import bookingRequestModel from '../database/BookingRequests'
+// import bookingRequestModel from '../database/BookingRequests';
 import bookingInterface from '../../domain/bookingRequests';
 import User from '../../domain/user';
 import { userModel } from '../database/userModel';
@@ -63,8 +64,7 @@ class vendorRepository implements IVendorRepository{
             const {description,phoneNumber,startingPrice} = formData
             const vendor = await vendorModel.findOneAndUpdate({_id:vendorId},{$set:{phoneNumber:phoneNumber,description:description,startingPrice:startingPrice}})
             console.log("vendor",vendor);
-            return vendor
-            
+            return vendor  
         } catch (error) {
             console.error(error)
             return null
@@ -118,7 +118,7 @@ class vendorRepository implements IVendorRepository{
 
     async  getBookingRequests(vendorId:string): Promise< bookingInterface[] | null> {
         try {
-            const bookingReqs = await bookingModel.find({vendorId:vendorId})
+            const bookingReqs = await bookingRequestModel.find({vendorId:vendorId})
             console.log("logging",bookingReqs);
             
             return bookingReqs
@@ -130,7 +130,7 @@ class vendorRepository implements IVendorRepository{
 
     async acceptRequest(bookingId: string): Promise<bookingInterface | null> {
         try {
-            const acceptedReq = await bookingModel.findOneAndUpdate({_id:bookingId},{$set:{bookingStatus:AcceptanceStatus.Accepted}},{new:true})
+            const acceptedReq = await bookingRequestModel.findOneAndUpdate({_id:bookingId},{$set:{bookingStatus:AcceptanceStatus.Accepted}},{new:true})
             return acceptedReq
         } catch (error) {
             console.log(error)
