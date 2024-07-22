@@ -79,7 +79,7 @@ class userController{
             const accessToken= isValidUser?.accessToken
             const refreshToken = isValidUser?.refreshToken
             console.log("refreshoken",refreshToken)
-            res.cookie('refreshToken',refreshToken,{httpOnly:true})
+            res.cookie('refreshToken',refreshToken,{httpOnly:true,maxAge: 7 * 24 * 60 * 60 * 1000})
             res.status(200).json({accessToken,success:true})
         } catch (error) {
             console.log(error)
@@ -167,7 +167,6 @@ class userController{
         try {
             console.log("gettinginAllVendors")
             const result = await this.usercase.getAllVendorsData()
-            console.log("result of getallvendors",result)
             if(result?.success){
                 res.status(200).json({success:true,data:result.data})
             }
@@ -196,7 +195,11 @@ class userController{
         try {
             console.log("res.cookie",req.cookies)
             const {companyName,vendorId ,amount,bookingData} = req.body
-            const result = await this.usercase.makeBookingPayment(companyName,vendorId,amount,req.body,bookingData)
+            console.log(parseInt(amount)/3)
+            const am = parseInt(amount) * parseInt(bookingData.noOfDays)
+            let advancePayment  = Math.floor(am/3)
+            const advAmount = JSON.stringify(advancePayment)
+            const result = await this.usercase.makeBookingPayment(companyName,vendorId,advAmount,req.body,bookingData)
             if(result){
                 res.cookie('bookingId',bookingData?._id,{httpOnly:true})
                 res.cookie('Amount',amount,{httpOnly:true})
@@ -248,6 +251,7 @@ class userController{
     async isExistingBooking(req:Request,res:Response){
         try {
             console.log("in existing bookinggggg")
+            console.log(Date.now())
             const {vendorId} = req.body
             const token = req.headers.authorization?.split(' ')[1] as string
             const result = await this.usercase.isbookingExisting(token,vendorId)
@@ -270,10 +274,50 @@ class userController{
             const result = await this.usercase.confirmPayment(bookingId,amountPaid)
             console.log("gert here after confirming payment")
             if(result?.success){
-               res.redirect('http://localhost:3000/paymentSuccess')   
+               res.redirect('http://localhost:3000/paymentSuccess')  
+            }else if(result?.OtherUserBooked){
+               res.redirect('http://localhost:3000/paymentFailed?otherUsedBooked=true')  
             }
         } catch (error) {
             console.error(error)
+        }
+    }
+
+    async getBookingDetials(req:Request,res:Response){
+        try {
+            const token = req.headers.authorization?.split(' ')[1] as string
+            const result = await this.usercase.getBookingDetials(token)
+            console.log(result)
+            if(result?.success){
+                return res.status(200).json({success:true,bookings:result.bookings})
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async getBookingRequests(req:Request,res:Response){
+        try {
+            const token = req.headers.authorization?.split(' ')[1] as string
+            const result = await this.usercase.getbookingRequests(token)
+            console.log("result of bookingreqs isss",result)
+            if(result?.success){
+                return res.status(200).json({success:true,bookingReqs:result.bookingReqs})
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async cancelbookingReq(req:Request,res:Response){
+        try {
+            const {bookingId} = req.body
+            const result = await this.usercase.cancelBookingRequests(bookingId)
+            if(result?.success){
+                return res.status(200).json({success:true,cancelled:true})
+            }
+        } catch (error) {
+            
         }
     }
     

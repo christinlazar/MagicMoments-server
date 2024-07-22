@@ -11,7 +11,7 @@ interface IVendorRepository{
     getVendorData(vendorId:string):Promise<Vendor | null>
     getVendors():Promise <Vendor[] | null >
     getVendor(vendorId:string):Promise<Vendor | null>
-    addDates(dates:string[],vendorId:string):Promise<Vendor | null>
+    addDates(dates:string[],vendorId:string):Promise<Vendor | null | boolean>
     getBookingRequests(vendorId:string):Promise<bookingInterface[] | null>
     acceptRequest(bookingId:string):Promise<bookingInterface | null>
     addEventDate(eventDate:string,vendorId:string):Promise<Vendor | null>

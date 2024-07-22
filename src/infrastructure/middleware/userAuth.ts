@@ -3,7 +3,7 @@ import { Request,Response,NextFunction } from "express";
 import JWTtoken from "../utils/JWTtoken";
 
 const jwtTOKEN = new JWTtoken()
-const authenticateUser = (req:Request,res:Response,next:NextFunction) =>{
+const authenticateUser = async  (req:Request,res:Response,next:NextFunction) =>{
     console.log("getting inside authenticate user")
     try {
         const authHeader = req.headers['authorization']
@@ -13,7 +13,7 @@ const authenticateUser = (req:Request,res:Response,next:NextFunction) =>{
         if(token == null){
             return res.status(401).json({refresh:false})
         }
-        const decode = jwtTOKEN.verifyJWT(token)
+        const decode = await jwtTOKEN.verifyJWT(token)
         
         console.log("decode isssss",decode)
         if(decode){

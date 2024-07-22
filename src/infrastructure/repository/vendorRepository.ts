@@ -1,8 +1,7 @@
 import Vendor from '../../domain/vendor';
 import IVendorRepository from '../../useCases/interface/IVendorRepository';
 import vendorModel from '../database/vendorModel';
-import bookingRequestModel from '../database/BookingRequests'
-// import bookingRequestModel from '../database/BookingRequests';
+import bookingRequestModel from '../database/BookingRequests';
 import bookingInterface from '../../domain/bookingRequests';
 import User from '../../domain/user';
 import { userModel } from '../database/userModel';
@@ -105,9 +104,21 @@ class vendorRepository implements IVendorRepository{
         }
     }
 
-    async addDates(dates: string[],vendorId:string): Promise<Vendor | null> {
+    async addDates(dates: string[],vendorId:string): Promise<Vendor | null | boolean> {
         try {
             console.log("dates array is",dates)
+            const vendorData:any = await vendorModel.findOne({_id:vendorId})
+            console.log("vend",vendorData)
+            for(let i = 0;i<dates.length;i++){
+                console.log(dates[i])
+             for(let j = 0 ;j<vendorData?.unAvailableDates.length;j++){
+                if(vendorData.unAvailableDates[j] == dates[i]){
+                    console.log("in thissssssssssssss");
+                    
+                    return false
+                }
+             }
+            }
             const vendor = await vendorModel.findOneAndUpdate({_id:vendorId},{$push:{unAvailableDates:{$each:dates}}},{new:true})
             return vendor
         } catch (error) {

@@ -5,6 +5,7 @@ import JWTtoken from "../utils/JWTtoken";
 const jwtTOKEN = new JWTtoken()
 const authenticateVendor = (req:Request,res:Response,next:NextFunction) =>{
     console.log("getting inside authenticate vendor")
+    console.log("Getingggggggggggggggg herrrrrrreeeeeeeeeeeeeeeeeeeeeeeee")
     try {
         const authHeader = req.headers['authorization']
         console.log("auth header",authHeader)

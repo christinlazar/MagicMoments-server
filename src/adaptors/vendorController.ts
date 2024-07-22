@@ -59,7 +59,7 @@ class vendorController{
             }  else if(result.success){
                 const refreshToken = result.refreshToken
                 const accessToken = result.accessToken
-                res.cookie('refreshToken',refreshToken,{httpOnly:true})
+                res.cookie('refreshToken',refreshToken,{httpOnly:true,maxAge: 7 * 24 * 60 * 60 * 1000})
                 res.status(200).json({success:true,accessToken})
             }
 
@@ -89,7 +89,7 @@ class vendorController{
         const refreshToken = req.cookies.refreshToken;
         console.log("refreshtoken of vendor is",refreshToken)
         if(!refreshToken){
-            return 
+            return res.json({refresh:false,role:'vendor'})
         }
             const vendorAccessToken = await this.vendorCase.verifyRefreshToken(refreshToken)
             if(vendorAccessToken == null){
@@ -216,7 +216,9 @@ class vendorController{
             if(result?.success){
                 res.status(200).json({success:true})
             }else{
-                res.status(400).json({success:false})
+                console.log("in else");
+                
+                res.json({success:false})
             }
         } catch (error) {
             console.error(error)

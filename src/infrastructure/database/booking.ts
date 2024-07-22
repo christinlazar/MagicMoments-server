@@ -33,5 +33,5 @@ const bookingSchema:Schema<bookingInt> = new Schema({
     }
 },{timestamps:true})
 
-const bookingModel : Model<bookingInt> = mongoose.model<bookingInt>('booking',bookingSchema)
+const bookingModel:Model<bookingInt> = mongoose.model<bookingInt>('booking',bookingSchema)
 export default bookingModel

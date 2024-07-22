@@ -270,8 +270,12 @@ class vendorUseCase{
             const isVerifiedToken = this.jwtToken.verifyJWT(token)
             if(isVerifiedToken?.id){
                 const vendorId = isVerifiedToken.id
-            const result = this.ivendorRepository.addDates(dates,vendorId)
-            if(result != null || result != undefined){
+            const result = await this.ivendorRepository.addDates(dates,vendorId)
+            console.log("result issssssss",result)
+            if(result == false){
+                return {success:false}
+            }
+            if(result != null || result != undefined ){
                 return {success:true}
             }
             }else{
@@ -314,13 +318,13 @@ class vendorUseCase{
             console.log("wanted result is",result)
             console.log(result)
             if(result != null){
-                const result2 = await this.ivendorRepository.addEventDate(result?.startingDate,vendorId)
-                if(result2 != null){
-                      this.bookingAcceptanceMail.sendMail(user?.name,user?.email)
+                // const result2 = await this.ivendorRepository.addEventDate(result?.startingDate,vendorId)
+                // if(result2 != null){
+                    this.bookingAcceptanceMail.sendMail(user?.name,user?.email)
                     return {success:true}
-                }else{
-                    return {success:false}
-                }
+                // }else{
+                //     return {success:false}
+                // }
             }else{
                 return {success:false}
             }

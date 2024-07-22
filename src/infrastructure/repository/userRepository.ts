@@ -4,12 +4,13 @@ import IuserRepository from "../../useCases/interface/IuserRepository";
 import Vendor from "../../domain/vendor";
 import vendorModel from "../database/vendorModel";
 import bookingInterface from "../../domain/bookingRequests";
-// import bookingRequestModel from '../database/BookingRequests'
 import bookingRequestModel from "../database/BookingRequests";
 import bookingModel from "../database/booking";
 import bookingInt from "../../domain/bookings";
 import { PaymentStatus } from "../../domain/bookings";
+import mongoose, { ObjectId, Types } from "mongoose";
 class userRepository implements IuserRepository{
+
      async findByEmail(email:string,phone:number){
         try {
             const userExists = await userModel.findOne({$or:[{email:email},{phone:phone}]});
@@ -23,8 +24,6 @@ class userRepository implements IuserRepository{
             return null;
         }
     }
-
-
 
      async saveUser(user: User){
         try{
@@ -53,8 +52,6 @@ class userRepository implements IuserRepository{
     async  getVendors(): Promise< Vendor[] | null> {
         try {
             const vendors = await vendorModel.find({})
-            console.log("vendors in repo",vendors);
-            
             return vendors
         } catch (error) {
             console.error(error)
@@ -122,7 +119,7 @@ class userRepository implements IuserRepository{
         }
     }
 
-    async  isBookingAccepted(userId: string,vendorId:string): Promise<bookingInterface | null> {
+    async  isBookingAccepted(userId:string,vendorId:string): Promise<bookingInterface | null> {
         try {
             const bookingData = await bookingRequestModel.findOne({userId:userId,vendorId:vendorId})
             return bookingData
@@ -135,6 +132,8 @@ class userRepository implements IuserRepository{
     async  isBookingExisting(userId:string,vendorId:string): Promise<bookingInterface | null> {
         try {
             console.log("userIDDD is",userId)
+            console.log("vendorId",vendorId);
+            
             const bookingData = await bookingRequestModel.findOne({userId:userId,vendorId:vendorId})
             return bookingData
         } catch (error) {
@@ -143,7 +142,7 @@ class userRepository implements IuserRepository{
         }
     }
 
-    async confirmBooking(bookingId: string,amountPaid:string): Promise<bookingInt | null | undefined> {
+    async confirmBooking(bookingId: string,amountPaid:string): Promise<bookingInt | null | undefined | boolean> {
         try {
             const bookingData = await bookingRequestModel.findOne({_id:bookingId})
             const dataToConfirmBooking = {
@@ -155,12 +154,63 @@ class userRepository implements IuserRepository{
                 amountPaid:amountPaid,
                 paymentStatus:PaymentStatus.Completed
             }
+            const vendor = await vendorModel.findOne({_id:dataToConfirmBooking.vendorId})
+            let theDate:any = dataToConfirmBooking.startingDate
+            const [year,month,day] = theDate.split('-')
+            let newDate = `${day}/${month}/${year}`
+            console.log("newDate",newDate)
+            if(vendor?.unAvailableDates.includes(newDate)){
+                return false
+            }
             const data = new bookingModel(dataToConfirmBooking)
             const bookingDataAfterConfirm = await data.save()
             if(bookingDataAfterConfirm){
                 await bookingRequestModel.findByIdAndDelete({_id:bookingId})
+                let theDate:any = dataToConfirmBooking.startingDate
+                const [year,month,day] = theDate.split('-')
+                let newDate = `${day}/${month}/${year}`
+                console.log("newDate",newDate)
+                let vendor = dataToConfirmBooking.vendorId
+                // console.log("the vendor is",vendor)
+                await vendorModel.findOneAndUpdate({_id:vendor},{$push:{unAvailableDates:newDate}},{new:true})
                 return bookingDataAfterConfirm
             }
+        } catch (error) {
+            console.error(error)
+            return null
+        }
+    }
+
+    async findTheBookings(userid:string): Promise<bookingInt[] | null> {
+        try {
+            console.log("userIddd",userid)
+            const usId = new mongoose.Types.ObjectId(userid)
+          const bookings = await bookingModel.find({userId:usId}).populate('vendorId')
+            console.log("bookingssssssssssss",bookings)
+            return bookings
+        } catch (error) {
+            console.error(error)
+            return null
+        }
+    }
+
+    async findBookingReqs(userid:string): Promise<bookingInterface[] | null> {
+        try {
+            console.log("userIddd",userid)
+            const usId = new mongoose.Types.ObjectId(userid)
+            const bookingReqs = await bookingRequestModel.find({userId:usId}).populate('vendorId')
+            return bookingReqs
+        } catch (error) {
+            console.error(error)
+            return null
+        }
+    }
+
+    async cancelBookingRequest(bookingId: string): Promise<bookingInterface | null> {
+        try {
+            console.log("bk id is",bookingId)
+            const bookingReq = await bookingRequestModel.findByIdAndDelete({_id:bookingId},{new:true})
+            return bookingReq
         } catch (error) {
             console.error(error)
             return null

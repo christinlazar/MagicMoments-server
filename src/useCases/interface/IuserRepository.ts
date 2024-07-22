@@ -13,8 +13,11 @@ interface IuserRepository{
     saveBookingRequest(userId:string,vendorId:string,startingDate:string,noOfDays:string,userName:string | undefined) : Promise<bookingInterface | null>
     findUser(userId:string):Promise< User | null>
     isBookingAccepted(userId:string,vendorId:string):Promise<bookingInterface | null>
-    isBookingExisting(userId:string,vendorId:string | Types.ObjectId | Types.ObjectId):Promise<bookingInterface | null>
-    confirmBooking(bookingId:string,amountPaid:string):Promise<bookingInt | null | undefined>
+    isBookingExisting(userId:string,vendorId:string ):Promise<bookingInterface | null>
+    confirmBooking(bookingId:string,amountPaid:string):Promise<bookingInt | null | undefined | boolean>
+    findTheBookings(userid:string):Promise<bookingInt[] | null>
+    findBookingReqs(userid:string):Promise<bookingInterface[] | null>
+    cancelBookingRequest(bookingId:string):Promise<bookingInterface | null>
 }
 
 export default IuserRepository;

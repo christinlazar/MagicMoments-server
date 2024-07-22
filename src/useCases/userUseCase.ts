@@ -221,7 +221,6 @@ class userUsecase{
 
     async getAllVendorsData(){
         try {
-            console.log("In get all vendorsdata in vendorcase")
             const vendors = await this.iuserRepository.getVendors() 
             if(vendors != null || vendors != undefined){
                 return {success:true,data:vendors}
@@ -247,8 +246,9 @@ class userUsecase{
 
     async isBookingAvailable(date:string,vendorId:string,totalNoOfDays:string,token:string){
         try {
-            const Token =  this.JWTtoken.verifyJWT(token)
+            const Token = await this.JWTtoken.verifyJWT(token)
             const user = await this.iuserRepository.findUser(Token?.id)
+            console.log("THE USER IS",user)
             console.log("The user who requested is",user)
             console.log("TOKEN IN IS BOOKING AVAILABLE",Token)
             const result = await this.iuserRepository.checkIsAvailable(date,vendorId)
@@ -256,11 +256,14 @@ class userUsecase{
             if(result){
                 const userId = Token?.id
                 const userName = user?.name
+                console.log("userName is",userName)
                 console.log(userId)
                 console.log(Token)
                 const createBookingRequest = await this.iuserRepository.saveBookingRequest(userId,vendorId,date,totalNoOfDays,userName)
                 console.log("created booking request is",createBookingRequest)
+                if(createBookingRequest != null){
                 return {success:true,reqSend:true}
+                }
             }else{
                 return {success:false,reqSend:false}
             }
@@ -288,7 +291,9 @@ class userUsecase{
 
     async isbookingExisting(token:string,vendorId:string){
         try{
+            console.log("vendorId",vendorId)
             const isValidToken = this.JWTtoken.verifyJWT(token)
+            console.log("isVlaidToken",isValidToken)
             const userId = isValidToken?.id
             const result = await this.iuserRepository.isBookingExisting(userId,vendorId)
             console.log("existing booking",result)
@@ -313,13 +318,57 @@ class userUsecase{
     async confirmPayment(bookingId:string,amountPaid:string){
         try {
             const result = await this.iuserRepository.confirmBooking(bookingId,amountPaid)
-            if(result != null || result != undefined){
+            if(result == false){
+                return {OtherUserBooked:true}
+            }
+            else if(result != null || result != undefined){
                 return {success:true}
             }else{
                 return {success:false}
             }
         } catch (error) {
             console.error(error)
+        }
+    }
+
+    async getBookingDetials(token:string){
+            try {
+                const validToken = await this.JWTtoken.verifyJWT(token)
+                const userId = validToken?.id
+                console.log("userrrrrrrrr",userId)
+                const result = await this.iuserRepository.findTheBookings(userId)
+                console.log("bookings is",result)
+                if(result != null ){
+                    return {success:true,bookings:result}
+                }
+            } catch (error) {
+                console.error(error)
+            }
+    }
+
+    async getbookingRequests(token:string){
+            try {
+            const validToken = await this.JWTtoken.verifyJWT(token)
+            const userId = validToken?.id
+            console.log("userrr",userId)
+            const result = await this.iuserRepository.findBookingReqs(userId)
+            console.log("bookingReqs",result)
+            if(result != null){
+                return {success:true,bookingReqs:result}
+            }
+            } catch (error) {
+                console.error(error)
+            }
+    }
+
+    async cancelBookingRequests(bookingId:string){
+        try {
+            const result = await this.iuserRepository.cancelBookingRequest(bookingId)
+            if(result != null){
+                return {success:true}
+            }
+        } catch (error) {
+            
         }
     }
 }
