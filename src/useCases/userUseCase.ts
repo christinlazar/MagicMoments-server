@@ -368,6 +368,19 @@ class userUsecase{
                 return {success:true}
             }
         } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async getPhotos(vendorId:string){
+        try {
+            console.log("in get photos useCase",vendorId);
+            
+            const result = await this.iuserRepository.getPhotos(vendorId)
+            if(result != null){
+                return {success:true,vendorData:result}
+            }
+        } catch (error) {
             
         }
     }

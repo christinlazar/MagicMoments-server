@@ -216,6 +216,17 @@ class userRepository implements IuserRepository{
             return null
         }
     }
+
+    async getPhotos(vendorId:string): Promise<Vendor | null> {
+        try {
+            const vendor = await vendorModel.findOne({_id:vendorId})
+            console.log("vendor is",vendor)
+            return vendor
+        } catch (error) {
+            console.error(error)
+            return null
+        }
+    }
 }
 
 export default userRepository

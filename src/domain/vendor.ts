@@ -18,7 +18,7 @@ interface Vendor{
     phoneNumber:string;
     startingPrice:string;
     unAvailableDates:string[];
-    services:string[];
+    services?:string[];
     isBlocked:boolean;
 }
 

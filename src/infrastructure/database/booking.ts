@@ -25,7 +25,8 @@ const bookingSchema:Schema<bookingInt> = new Schema({
         required:true
     },
     amountPaid:{
-        type:String
+        type:String,
+        required:true
     },
     paymentStatus:{
         type:String,

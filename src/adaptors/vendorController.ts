@@ -238,6 +238,19 @@ class vendorController{
         }
     }
 
+    async getBookings(req:Request,res:Response){
+        try {
+            const token = req.headers.authorization?.split(' ')[1] as string
+            const result = await this.vendorCase.getbookings(token)
+            console.log("result in vendContr of bookingReq",result)
+            if(result?.success){
+                res.status(200).json({success:true,bookings:result.bookings})
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
     async acceptBookingrequest(req:Request,res:Response){
         try {
             console.log("came in acceptance");
@@ -250,6 +263,22 @@ class vendorController{
         } catch (error) {
             console.log(error);
             
+        }
+    }
+
+    async addServices(req:Request,res:Response){
+        try {
+            const token = req.headers.authorization?.split(' ')[1] as string
+            const {serviceData} = req.body
+            console.log("service data",serviceData)
+            const result = await this.vendorCase.addVendorServices(serviceData,token)
+            if(result?.success){
+                return res.status(200).json({success:true,serviceAdded:true})
+            }else{
+                return res.json({success:false})
+            }
+        } catch (error) {
+            console.error(error)
         }
     }
     

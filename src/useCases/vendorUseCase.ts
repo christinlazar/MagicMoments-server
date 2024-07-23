@@ -303,6 +303,23 @@ class vendorUseCase{
         }
     }
 
+    async getbookings(token:string){
+        try {
+            const verifiedToken = await this.jwtToken.verifyJWT(token)
+            if(verifiedToken){
+                const vendorId = verifiedToken.id 
+                const result = await this.ivendorRepository.getBookings(vendorId)
+                console.log(result)
+                if(result){
+                    return {success:true,bookings:result}
+                }
+            }
+          
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     async acceptRequest(bookingId:string,token:string){
         try {
             console.log("innnnnnnnnnnnn accept");
@@ -329,9 +346,29 @@ class vendorUseCase{
                 return {success:false}
             }
         } catch (error) {
-            
+            console.error(error)
         }
     }
+
+    async addVendorServices(serviceData:string[],token:string){
+        try {
+            const verifiedToken = await this.jwtToken.verifyJWT(token)
+            if(verifiedToken?.id){
+                const vendorId = verifiedToken.id
+                console.log("vendorId is",vendorId)
+                const result = await this.ivendorRepository.addServices(serviceData,vendorId)
+                if(result != null){
+                    return {success:true}
+                }else{
+                    return {success:false}
+                }
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+
 
 }
 

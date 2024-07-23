@@ -269,7 +269,7 @@ class userController{
         try {
             console.log("gonna do confirm payment")
             const bookingId = req.cookies.bookingId
-            const amountPaid = req.cookies.amount
+            const amountPaid = req.cookies.Amount
             console.log("bookingId is",bookingId);
             const result = await this.usercase.confirmPayment(bookingId,amountPaid)
             console.log("gert here after confirming payment")
@@ -318,6 +318,16 @@ class userController{
             }
         } catch (error) {
             
+        }
+    }
+
+    async bringPhotos(req:Request,res:Response){
+        console.log("reached here");
+        
+        const {vendorId} = req.body
+        const result = await this.usercase.getPhotos(vendorId)
+        if(result?.success){
+            return res.status(200).json({success:true,vendorData:result.vendorData})
         }
     }
     

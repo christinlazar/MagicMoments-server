@@ -33,6 +33,8 @@ router.get('/getVendorData',authenticateVendor,(req,res)=>controller.getVendorDa
 router.post('/unAvailableDates',authenticateVendor,(req,res)=>controller.addUnavailableDates(req,res))
 router.get('/getBookingRequests',authenticateVendor,(req,res)=>controller.getBookingRequests(req,res))
 router.post('/acceptBookingrequest',authenticateVendor,(req,res)=>controller.acceptBookingrequest(req,res))
+router.get('/fetchBookings',authenticateVendor,(req,res)=>controller.getBookings(req,res))
+router.post('/addServices',authenticateVendor,(req,res)=>controller.addServices(req,res))
 
 
 

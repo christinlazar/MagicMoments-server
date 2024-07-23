@@ -8,6 +8,8 @@ import { userModel } from '../database/userModel';
 
 import { AcceptanceStatus } from '../../domain/vendor';
 import { Types } from 'mongoose';
+import bookingInt from '../../domain/bookings';
+import bookingModel from '../database/booking';
 
 class vendorRepository implements IVendorRepository{
 
@@ -139,6 +141,16 @@ class vendorRepository implements IVendorRepository{
         }
     }
 
+    async getBookings(vendorId:string): Promise<bookingInt[] | null> {
+        try {
+            const bookings = await bookingModel.find({vendorId:vendorId})
+            return bookings
+        } catch (error) {
+            console.error(error)
+            return null
+        }
+    }
+
     async acceptRequest(bookingId: string): Promise<bookingInterface | null> {
         try {
             const acceptedReq = await bookingRequestModel.findOneAndUpdate({_id:bookingId},{$set:{bookingStatus:AcceptanceStatus.Accepted}},{new:true})
@@ -173,6 +185,25 @@ class vendorRepository implements IVendorRepository{
             return null
         }
     }
+
+    async addServices(serviceData: string[], vendorId: string): Promise<Vendor | null> {
+        try {
+            const vendorData = await vendorModel.findOne({_id:vendorId})
+            if(vendorData){
+                for(let i = 0;i<serviceData.length;i++){
+                    if(vendorData.services?.includes(serviceData[i])){
+                        return null
+                    }
+                }
+            }
+            const vendor = await vendorModel.findOneAndUpdate({_id:vendorId},{$push:{services:{$each:serviceData}}},{new:true})
+            return vendor
+        } catch (error) {
+            console.error(error)
+            return null
+        }
+    }
+
 
 }
 
