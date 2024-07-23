@@ -19,6 +19,7 @@ interface IuserRepository{
     findBookingReqs(userid:string):Promise<bookingInterface[] | null>
     cancelBookingRequest(bookingId:string):Promise<bookingInterface | null>
     getPhotos(vendorId:string):Promise<Vendor | null>
+    getVideos(vendorId:string):Promise<Vendor | null>
 }
 
 export default IuserRepository;

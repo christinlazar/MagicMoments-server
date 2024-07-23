@@ -384,6 +384,17 @@ class userUsecase{
             
         }
     }
+
+    async getVideos(vendorId:string){
+        try {
+            const result = await this.iuserRepository.getVideos(vendorId)
+            if(result != null){
+                return {success:true,vendorData:result}
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
 }
 
 export default userUsecase

@@ -330,6 +330,14 @@ class userController{
             return res.status(200).json({success:true,vendorData:result.vendorData})
         }
     }
+
+    async bringVideos(req:Request,res:Response){
+        const {vendorId} = req.body
+        const result = await this.usercase.getVideos(vendorId)
+        if(result?.success){
+            return res.status(200).json({success:true,vendorData:result.vendorData})
+        }
+    }
     
 }
 export default userController;

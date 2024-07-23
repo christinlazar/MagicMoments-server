@@ -39,6 +39,7 @@ router.post('/fetchBookingDetials',authenticateUser,(req,res)=>controller.getBoo
 router.post('/fetchBookingRequests',authenticateUser,(req,res)=>controller.getBookingRequests(req,res))
 router.post('/cancelBooking',authenticateUser,(req,res)=>controller.cancelbookingReq(req,res))
 router.post('/bringPhotos',authenticateUser,(req,res)=>controller.bringPhotos(req,res))
+router.post('/bringVideos',authenticateUser,(req,res)=>controller.bringVideos(req,res))
 
 
 export default router

@@ -227,6 +227,17 @@ class userRepository implements IuserRepository{
             return null
         }
     }
+
+    async getVideos(vendorId: string): Promise<Vendor | null> {
+        try {
+            const vendor = await vendorModel.findOne({_id:vendorId})
+            console.log("vendor",vendor)
+            return vendor
+        } catch (error) {
+            console.error(error)
+            return null
+        }
+    }
 }
 
 export default userRepository
