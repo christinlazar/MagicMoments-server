@@ -24,7 +24,7 @@ class JWTtoken implements IJwttoken{
         console.log("inside create jwt")
         const jwtKey = process.env.ACCESS_TOKEN_SECRET
         if(jwtKey){
-            const token:string = jwt.sign({id:userID,role:role},jwtKey,{expiresIn:'1m'})
+            const token:string = jwt.sign({id:userID,role:role},jwtKey,{expiresIn:'5m'})
             return token
         }
         throw new Error('Jwt key is not defined')

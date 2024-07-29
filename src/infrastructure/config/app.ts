@@ -5,6 +5,7 @@ import userRoutes from '../routes/userRoute'
 import cookieParser from 'cookie-parser'
 import adminRoutes from '../routes/adminRoute'
 import vendorRoutes from '../routes/vendorRoute'
+import chatRoutes from '../routes/chatRoutes'
 import bodyParser from 'body-parser'
 export const createServer = () =>{
     try {
@@ -21,6 +22,7 @@ export const createServer = () =>{
         app.use('/api/user',userRoutes)
         app.use('/api/admin',adminRoutes)
         app.use('/api/vendor',vendorRoutes)
+        app.use('/api/chat',chatRoutes)
         const server = http.createServer(app)
         return server;
     } catch (error) {
