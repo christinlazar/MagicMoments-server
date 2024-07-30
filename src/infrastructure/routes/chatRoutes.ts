@@ -15,6 +15,7 @@ router.post('/getvendorChat',authenticateUser,(req,res)=>controller.getVendorCha
 router.post('/sendMessage',authenticateUser,(req,res)=>controller.sendMessage(req,res))
 router.post('/getChats',authenticateVendor,(req,res)=>controller.getUserChats(req,res))
 router.post('/bringVendorUserChat',authenticateVendor,(req,res)=>controller.getVendorUserChat(req,res))
+router.post('/sendMessageTouser',authenticateVendor,(req,res)=>controller.sendMessageToUser(req,res))
 
 export default router
 

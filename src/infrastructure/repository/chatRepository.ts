@@ -1,9 +1,10 @@
 import conversationInterface from "../../domain/coversation"
 import IchatRepository from "../../useCases/interface/IChatRepository"
+import { getReceiverSocketId, getSocketServer } from "../config/socketServer"
 import conversationModel from "../database/conversation"
 import messageModel from "../database/message"
 import { userModel } from "../database/userModel"
-
+// import {Server} from 'socket.io'
 
 class chatRespository implements IchatRepository{
     async getvendorChat(token:string, receiverId:string,senderId:string): Promise<conversationInterface | null | undefined> {
@@ -40,7 +41,8 @@ class chatRespository implements IchatRepository{
 
     async sendMessage(message:string,conversationId:string,senderModel:string,receiverId:any,receiverModel:string,senderId:string): Promise<conversationInterface | null | undefined> {
         try {
-            let receiver = receiverId._id
+           
+            let receiver = receiverId.participantId
             const newMessage =  new messageModel({
                 chatId:conversationId,
                 senderId:senderId,
@@ -50,12 +52,22 @@ class chatRespository implements IchatRepository{
                 message
             })
             const savedMessage = await newMessage.save()
+
+           
             let conversation
             if(savedMessage){
                  conversation = await conversationModel.findOneAndUpdate({_id:conversationId},{$push:{messages:savedMessage._id}},{new:true}).populate('messages')
                 console.log("populated",conversation)
             }
             if(conversation){
+                console.log("receiverrrr",receiverId)
+                console.log("conversation",conversationId)
+                const receiverSocketId = getReceiverSocketId(receiverId.participantId)
+                console.log("receiverSocketid1 is",receiverSocketId)
+                if(receiverSocketId){
+                   const io = getSocketServer()
+                    io.to(receiverSocketId).emit('newConversation',conversation)
+                }
             return conversation
             }else{
                 return undefined
@@ -105,6 +117,42 @@ class chatRespository implements IchatRepository{
             }).populate('messages')
             console.log("messages in getvendoruserchat",conversations)
             return conversations
+        } catch (error) {
+            console.error(error)
+            return null
+        }
+    }
+
+    async sendmessageToUser(conversationId: string, senderId: string, receiverId: string, message: string): Promise<conversationInterface | null | undefined> {
+        try {
+            const senderModel = 'Vendor'
+            const receiverModel = 'User'
+            const newMessage =  new messageModel({
+                chatId:conversationId,
+                senderId:senderId,
+                senderModel,
+                receiverId:receiverId,
+                receiverModel,
+                message
+            })
+            const savedMessage = await newMessage.save()
+            let conversation
+            if(savedMessage){
+                 conversation = await conversationModel.findOneAndUpdate({_id:conversationId},{$push:{messages:savedMessage._id}},{new:true}).populate('messages')
+                console.log("populated",conversation)
+            }
+            if(conversation){
+                const receiverSocketId = getReceiverSocketId(receiverId)
+                console.log("receiverSocketid2 is",receiverSocketId)
+                if(receiverSocketId){
+                    
+                    const io = getSocketServer()
+                    io.to(receiverSocketId).emit('newConversation',conversation)
+                }
+                return conversation
+            }else{
+            return undefined
+            }
         } catch (error) {
             console.error(error)
             return null

@@ -65,6 +65,18 @@ class chatController{
         }
     }
 
+    async sendMessageToUser(req:Request,res:Response){
+        try {
+            const {conversationId,receiverId,message} = req.body
+            const token = req.headers.authorization?.split(' ')[1] as string
+            const result = await this.chatcase.sendMessageToUser(conversationId,receiverId,message,token)
+            if(result?.result){
+                return res.status(200).json({success:true,conversations:result.result})
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
     
 }
 

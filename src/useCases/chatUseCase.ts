@@ -73,6 +73,22 @@ class chatCase{
             }
         }
     }
+
+    async sendMessageToUser(conversationId:string,receiverId:string,message:string,token:string){
+        try {
+            const isValidToken =  this.jwtToken.verifyJWT(token)
+            if(isValidToken){
+                const senderId = isValidToken.id
+                const result = await this.chatRepo.sendmessageToUser(conversationId,senderId,receiverId,message)
+                if(result){
+                    return {result}
+                }
+
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
 }
 
 export default chatCase

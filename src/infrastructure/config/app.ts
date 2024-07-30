@@ -7,6 +7,7 @@ import adminRoutes from '../routes/adminRoute'
 import vendorRoutes from '../routes/vendorRoute'
 import chatRoutes from '../routes/chatRoutes'
 import bodyParser from 'body-parser'
+import socketServer from './socketServer'
 export const createServer = () =>{
     try {
         const app = express()
@@ -24,6 +25,7 @@ export const createServer = () =>{
         app.use('/api/vendor',vendorRoutes)
         app.use('/api/chat',chatRoutes)
         const server = http.createServer(app)
+        socketServer(server)
         return server;
     } catch (error) {
         console.log(error)
