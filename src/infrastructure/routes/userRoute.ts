@@ -8,16 +8,18 @@ import sendMail from '../utils/sendMail'
 import hashPassword from '../utils/hashPassword'
 import authenticateUser from '../middleware/userAuth'
 import makePayment from '../utils/payment'
+import reminderMail from '../utils/reminderMail'
 const repository = new userRepository()
 const otp = new otpGenerate()
 const jwt = new JWTtoken()
 const sendmail = new sendMail()
 const hashpwd = new hashPassword()
 const makepayment = new makePayment()
+const remindermail = new reminderMail()
 const router = express.Router()
 
 
-const userCase = new userUsecase(repository,otp,jwt,sendmail,hashpwd,makepayment)
+const userCase = new userUsecase(repository,otp,jwt,sendmail,hashpwd,makepayment,remindermail)
 const controller = new userController(userCase)
 router.post('/verifyMail',(req,res)=>{controller.verifyEmail(req,res)})
 router.post('/verifyOtp',(req,res)=>controller.verifyOtp(req,res))

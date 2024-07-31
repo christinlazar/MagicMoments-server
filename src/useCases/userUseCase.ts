@@ -6,6 +6,7 @@ import sendMail from "../infrastructure/utils/sendMail";
 import hashPassword from "../infrastructure/utils/hashPassword";
 import IMakePayment from "./interface/IMakePayment";
 import makePayment from "../infrastructure/utils/payment";
+
 import jwt from 'jsonwebtoken'
 class userUsecase{
     private  iuserRepository:IuserRepository;
@@ -14,13 +15,15 @@ class userUsecase{
     private sendMail:sendMail
     private hashpassword:hashPassword
     private makePayment:IMakePayment
+    private reminderMail:any
     constructor(
         iuserRepository:IuserRepository,
         otpGenerate:otpGenerate,
         JWTtoken:JWTtoken,
         sendMail:sendMail,
         hashPassword:hashPassword,
-        makepayment:makePayment
+        makepayment:makePayment,
+        remindermail:any
 
     ){
         this.iuserRepository = iuserRepository 
@@ -29,6 +32,7 @@ class userUsecase{
         this.sendMail = sendMail
         this.hashpassword = hashPassword
         this.makePayment = makepayment
+        this.reminderMail = remindermail
     }
 
     async findUser(userInfo:User){

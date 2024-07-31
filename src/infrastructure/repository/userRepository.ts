@@ -9,6 +9,10 @@ import bookingModel from "../database/booking";
 import bookingInt from "../../domain/bookings";
 import { PaymentStatus } from "../../domain/bookings";
 import mongoose, { ObjectId, Types } from "mongoose";
+import reminderMail from "../utils/reminderMail";
+import cron from 'node-cron'
+
+const remindermail = new reminderMail()
 class userRepository implements IuserRepository{
 
      async findByEmail(email:string,phone:number){
@@ -172,14 +176,36 @@ class userRepository implements IuserRepository{
                 console.log("newDate",newDate)
                 let vendor = dataToConfirmBooking.vendorId
                 // console.log("the vendor is",vendor)
+                
                 await vendorModel.findOneAndUpdate({_id:vendor},{$push:{unAvailableDates:newDate}},{new:true})
+
+
+                const populatedBooking:any = await bookingModel.findOne({_id:bookingDataAfterConfirm._id}).populate('userId')
+                const job = cron.schedule('0 0 * * *', async ()=>{
+                    const currentDate = new Date();
+                    const reminderDate = new Date(currentDate.getTime() + 7 * 24 * 60 * 60 * 1000);
+                    const bookings = await bookingModel.find({
+                        startingDate:{
+                            $eq:reminderDate.setHours(0, 0, 0, 0)
+                        },             
+                    })
+                    bookings.forEach( async ()=>{
+                        remindermail.sendMail(bookingDataAfterConfirm.clientName,populatedBooking?.userId.email,bookingDataAfterConfirm.startingDate)
+                    })
+                    job.stop()
+                })
                 return bookingDataAfterConfirm
             }
+
+
         } catch (error) {
             console.error(error)
             return null
         }
     }
+
+    
+
 
     async findTheBookings(userid:string): Promise<bookingInt[] | null> {
         try {
