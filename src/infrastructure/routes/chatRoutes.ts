@@ -16,6 +16,7 @@ router.post('/sendMessage',authenticateUser,(req,res)=>controller.sendMessage(re
 router.post('/getChats',authenticateVendor,(req,res)=>controller.getUserChats(req,res))
 router.post('/bringVendorUserChat',authenticateVendor,(req,res)=>controller.getVendorUserChat(req,res))
 router.post('/sendMessageTouser',authenticateVendor,(req,res)=>controller.sendMessageToUser(req,res))
+// router.post('/videoChatRequest',authenticateUser,(req,res)=>controller.sendVideoCallRequest(req,res))
 
 export default router
 

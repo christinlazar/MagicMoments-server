@@ -77,6 +77,15 @@ class chatController{
             console.error(error)
         }
     }
+
+    // async sendVideoCallRequest(req:Request,res:Response){
+    //     try {
+    //         const token = req.headers.authorization?.split(' ')[1] as string
+    //          const result = await this.chatcase.sendMessageReq(token)
+    //     } catch (error) {
+    //         console.error()
+    //     }
+    // }
     
 }
 

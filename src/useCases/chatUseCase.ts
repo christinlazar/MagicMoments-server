@@ -89,6 +89,16 @@ class chatCase{
             console.error(error)
         }
     }
+
+    // async sendMessageReq(token:string){
+    //     try {
+    //         const isValidToken = this.jwtToken.verifyJWT(token)
+    //         const userId = isValidToken?.id
+    //         const result = await this.chatRepo.sendVideoCallRequest(userId)
+    //     } catch (error) {
+    //         console.error(error)
+    //     }
+    // }
 }
 
 export default chatCase
