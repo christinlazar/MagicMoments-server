@@ -368,6 +368,24 @@ class vendorUseCase{
         }
     }
 
+    async addlongitudelangitude(position:any,token:string){
+        try {
+            const verifiedToken = this.jwtToken.verifyJWT(token)
+            if(verifiedToken){
+                const vendorId = verifiedToken.id
+                const result = await this.ivendorRepository.addPositions(position,vendorId)
+                if(result == false){
+                    return {success:false}
+                }
+                if(result){
+                    return {success:true,result:result}
+                }
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
 
 
 }

@@ -281,6 +281,22 @@ class vendorController{
             console.error(error)
         }
     }
+
+    async addLongitudeLangitude(req:Request,res:Response){
+        try {
+            const token = req.headers.authorization?.split(' ')[1] as string 
+            const {position} = req.body
+            console.log("position is",position)
+            const result = await this.vendorCase.addlongitudelangitude(position,token)
+            if(result?.success){
+                return res.status(200).json({success:true,vendorData:result.result})
+            }else if(result?.success == false){
+                return res.json({success:false})
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
     
 }
 

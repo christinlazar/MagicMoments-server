@@ -2,6 +2,7 @@ import User from "../../domain/user";
 import Vendor from "../../domain/vendor";
 import bookingInterface from "../../domain/bookingRequests";
 import bookingInt from "../../domain/bookings";
+import reviewInterface from "../../domain/review";
 import { Types } from "mongoose";
 interface IuserRepository{
     findByEmail(email:string,phone?:number):Promise<User | null>,
@@ -20,6 +21,8 @@ interface IuserRepository{
     cancelBookingRequest(bookingId:string):Promise<bookingInterface | null>
     getPhotos(vendorId:string):Promise<Vendor | null>
     getVideos(vendorId:string):Promise<Vendor | null>
+    submitreview(review:string,rating:number | string,vendorId:string,userId:string):Promise<reviewInterface | null>
+    getreviews(vendorId:string):Promise<reviewInterface[] | null>
 }
 
 export default IuserRepository;

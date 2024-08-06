@@ -19,6 +19,10 @@ interface Vendor{
     startingPrice:string;
     unAvailableDates:string[];
     services?:string[];
+    location:{
+        lat:number,
+        lng:number,
+    }[];
     isBlocked:boolean;
 }
 

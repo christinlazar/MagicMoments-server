@@ -204,6 +204,30 @@ class vendorRepository implements IVendorRepository{
         }
     }
 
+    async addPositions(positions: any, vendorId: string): Promise<Vendor | null | any> {
+        try {
+            console.log("positios are",positions)
+            const ven =  await vendorModel.findOne({_id:vendorId})
+            const locArray = ven?.location
+            console.log("loc Array",locArray)
+            let isExists = locArray?.find((loc)=>{
+                if(loc.lat == positions.lat && loc.lng == positions.lng){
+                    return true
+                }
+            })
+            if(isExists){
+                return false
+            }
+            const vendorData = await vendorModel.findOneAndUpdate({_id:vendorId},{$push:{location:positions}})
+            if(vendorData){
+                return vendorData
+            }
+        } catch (error) {
+            console.error(error)
+            return null
+        }
+    }
+
 
 }
 

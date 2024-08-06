@@ -399,6 +399,35 @@ class userUsecase{
             console.error(error)
         }
     }
+
+    async submitReview(review:string,rating:number | string,vendorId:string,token:string){
+        try {
+            const verifiedToken = this.JWTtoken.verifyJWT(token)
+            if(verifiedToken){
+                const userId = verifiedToken.id
+                const result = await this.iuserRepository.submitreview(review,rating,vendorId,userId)
+                if(result){
+                    return {success:true,reviewData:result}
+                }else{
+                    return {success:false}
+                }
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+    
+    async getreviews(vendorId:string){
+        try {
+            console.log("vendor id in",vendorId)
+            const result = await this.iuserRepository.getreviews(vendorId)
+            if(result != null){
+                return{success:true,reviews:result}
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
 }
 
 export default userUsecase

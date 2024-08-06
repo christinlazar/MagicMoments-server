@@ -35,6 +35,7 @@ router.get('/getBookingRequests',authenticateVendor,(req,res)=>controller.getBoo
 router.post('/acceptBookingrequest',authenticateVendor,(req,res)=>controller.acceptBookingrequest(req,res))
 router.get('/fetchBookings',authenticateVendor,(req,res)=>controller.getBookings(req,res))
 router.post('/addServices',authenticateVendor,(req,res)=>controller.addServices(req,res))
+router.post('/addLongLang',authenticateVendor,(req,res)=>controller.addLongitudeLangitude(req,res))
 
 
 

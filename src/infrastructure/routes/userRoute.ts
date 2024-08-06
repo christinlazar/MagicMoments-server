@@ -42,6 +42,8 @@ router.post('/fetchBookingRequests',authenticateUser,(req,res)=>controller.getBo
 router.post('/cancelBooking',authenticateUser,(req,res)=>controller.cancelbookingReq(req,res))
 router.post('/bringPhotos',authenticateUser,(req,res)=>controller.bringPhotos(req,res))
 router.post('/bringVideos',authenticateUser,(req,res)=>controller.bringVideos(req,res))
+router.post('/submitReview',authenticateUser,(req,res)=>controller.submitReview(req,res))
+router.post('/getReviews',authenticateUser,(req,res)=>controller.getReviews(req,res))
 
 
 export default router

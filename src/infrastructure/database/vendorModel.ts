@@ -55,6 +55,17 @@ services:{
     type:[String],
     default:[]
 },
+location:{
+    type:[{
+        lat:{
+            type:Number
+        },
+        lng:{
+            type:Number
+        }
+    }],
+    _id:false
+},
 isBlocked:{
     type:Boolean,
     default:false

@@ -270,6 +270,7 @@ class userController{
             console.log("gonna do confirm payment")
             const bookingId = req.cookies.bookingId
             const amountPaid = req.cookies.Amount
+            console.log("That amount paid is ",amountPaid)
             console.log("bookingId is",bookingId);
             const result = await this.usercase.confirmPayment(bookingId,amountPaid)
             console.log("gert here after confirming payment")
@@ -336,6 +337,34 @@ class userController{
         const result = await this.usercase.getVideos(vendorId)
         if(result?.success){
             return res.status(200).json({success:true,vendorData:result.vendorData})
+        }
+    }
+
+    async submitReview(req:Request,res:Response){
+        try {
+            const {review,rating,vendorId} = req.body
+            const token = req.headers.authorization?.split(' ')[1] as string
+            const result = await this.usercase.submitReview(review,rating,vendorId,token)
+            if(result?.success){
+                return res.status(200).json({success:true,reviews:result.reviewData})
+            }else{
+                return res.json({success:false})
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async getReviews(req:Request,res:Response){
+        try {
+            const {vendorId} = req.body
+            console.log("vendorId of req.body",vendorId)
+            const result = await this.usercase.getreviews(vendorId)
+            if(result?.success){
+                return res.status(200).json({success:true,reviews:result.reviews})
+            }
+        } catch (error) {
+            console.error(error)
         }
     }
     

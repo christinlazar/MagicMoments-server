@@ -11,6 +11,8 @@ import { PaymentStatus } from "../../domain/bookings";
 import mongoose, { ObjectId, Types } from "mongoose";
 import reminderMail from "../utils/reminderMail";
 import cron from 'node-cron'
+import reviewInterface from "../../domain/review";
+import reviewModel from "../database/reviewModel";
 
 const remindermail = new reminderMail()
 class userRepository implements IuserRepository{
@@ -148,14 +150,16 @@ class userRepository implements IuserRepository{
 
     async confirmBooking(bookingId: string,amountPaid:string): Promise<bookingInt | null | undefined | boolean> {
         try {
-            const bookingData = await bookingRequestModel.findOne({_id:bookingId})
+            const bookingData:any = await bookingRequestModel.findOne({_id:bookingId})
+            const moneyPaid = Math.floor((parseInt(amountPaid) * bookingData?.noOfDays)/3)
+            let money = moneyPaid 
             const dataToConfirmBooking = {
                 vendorId:bookingData?.vendorId,
                 userId:bookingData?.userId,
                 clientName:bookingData?.userName,
                 startingDate:bookingData?.startingDate,
                 noOfDays:bookingData?.noOfDays,
-                amountPaid:amountPaid,
+                amountPaid:moneyPaid,
                 paymentStatus:PaymentStatus.Completed
             }
             const vendor = await vendorModel.findOne({_id:dataToConfirmBooking.vendorId})
@@ -259,6 +263,39 @@ class userRepository implements IuserRepository{
             const vendor = await vendorModel.findOne({_id:vendorId})
             console.log("vendor",vendor)
             return vendor
+        } catch (error) {
+            console.error(error)
+            return null
+        }
+    }
+
+    async submitreview(review: string, rating: number | string, vendorId: string, userId: string): Promise<reviewInterface | null> {
+        try {
+            const reviewData = {
+                vendorId,
+                userId,
+                review,
+                rating
+            }
+            const newReview = new reviewModel(reviewData)
+            const reviews  = await newReview.save()
+            if(reviews != null){
+            return reviews
+            }else{
+                return null
+            }
+        } catch (error) {
+            console.error(error)
+            return null
+        }
+    }
+
+    async getreviews(vendorId:string): Promise<reviewInterface[] | null> {
+        try {
+            console.log(vendorId)
+            const reviews  = await reviewModel.find({vendorId:vendorId}).populate('userId')
+            console.log("reviews is",reviews)
+            return reviews
         } catch (error) {
             console.error(error)
             return null
