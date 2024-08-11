@@ -15,8 +15,10 @@ const authenticateAdmin = (req:Request,res:Response,next:NextFunction) =>{
         }
         const decode = jwtTOKEN.verifyJWT(token)
         console.log("decode isssss -------",decode)
-        if(decode){
+        if(decode && decode.role == 'admin'){
             next()
+        }else if(decode && decode.role != 'admin'){
+            return res.status(401).json({success:false,role:decode.role})
         }else{
             console.log("getting in else")
             return res.status(401).json({success:false,role:'admin'})

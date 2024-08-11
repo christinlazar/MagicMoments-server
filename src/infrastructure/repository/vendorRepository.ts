@@ -1,6 +1,6 @@
 import Vendor from '../../domain/vendor';
 import IVendorRepository from '../../useCases/interface/IVendorRepository';
-import vendorModel from '../database/vendorModel';
+import vendorModel from '../database/vendorModel'; 
 import bookingRequestModel from '../database/BookingRequests';
 import bookingInterface from '../../domain/bookingRequests';
 import User from '../../domain/user';
@@ -206,21 +206,31 @@ class vendorRepository implements IVendorRepository{
 
     async addPositions(positions: any, vendorId: string): Promise<Vendor | null | any> {
         try {
-            console.log("positios are",positions)
+          
             const ven =  await vendorModel.findOne({_id:vendorId})
-            const locArray = ven?.location
-            console.log("loc Array",locArray)
-            let isExists = locArray?.find((loc)=>{
-                if(loc.lat == positions.lat && loc.lng == positions.lng){
+            const lat = positions.lat 
+            const lng = positions.lng
+            console.log(typeof(lat))
+            console.log(typeof(lng))
+            const newLocation = {
+                location:{
+                    type:"Point",
+                    coordinates:[lat,lng]
+                }
+            }
+            let locationArray:any = ven?.locations
+            let isExists = locationArray?.find((loc:any)=>{
+                if(loc.location.coordinates.includes(positions.lng) && loc.location.coordinates.includes(positions.lat)){
                     return true
                 }
             })
             if(isExists){
+                console.log("isExists",isExists)
                 return false
             }
-            const vendorData = await vendorModel.findOneAndUpdate({_id:vendorId},{$push:{location:positions}})
-            if(vendorData){
-                return vendorData
+            const dataAfterAddingLocation = await vendorModel.findByIdAndUpdate({_id:vendorId},{$push:{locations:newLocation}},{new:true})
+            if(dataAfterAddingLocation){
+                return dataAfterAddingLocation
             }
         } catch (error) {
             console.error(error)

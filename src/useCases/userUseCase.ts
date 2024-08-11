@@ -419,10 +419,82 @@ class userUsecase{
     
     async getreviews(vendorId:string){
         try {
-            console.log("vendor id in",vendorId)
             const result = await this.iuserRepository.getreviews(vendorId)
             if(result != null){
                 return{success:true,reviews:result}
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async getVendorAccordingTolocation(lat:string | number,lng:string | number,searchValue:string){
+            try {
+                const result = await this.iuserRepository.findByCoordinates(lat,lng,searchValue)
+                if(result != null){
+                    return {success:true,vendors:result}
+                }
+            } catch (error) {
+                
+            }
+    }
+
+    async addToWishList(vendorId:string,token:string){
+        try {
+            const isValidUser = this.JWTtoken.verifyJWT(token)
+            if(isValidUser){
+                const userId = isValidUser.id
+                const result = await this.iuserRepository.addtoWishlist(vendorId,userId)
+                if(result == false){
+                    return {success:false}
+                }
+                if(result != null && result != undefined){
+                    return {success:true,user:result}
+                }
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+    async getUserData(token:string){
+        try {
+            const isValidUser = this.JWTtoken.verifyJWT(token)
+            if(isValidUser){
+                const userId = isValidUser.id
+            const result = await this.iuserRepository.getUserData(userId)
+            if(result != null){
+                return {success:true,user:result}
+            }
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async getWishlistData(token:string){
+        try {
+            const isvalidUser = this.JWTtoken.verifyJWT(token)
+            if(isvalidUser){
+                const userId = isvalidUser.id
+                const result = await this.iuserRepository.getWishlist(userId)
+                if(result != null){
+                    return {success:true,wishlistData:result}
+                }
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async removeFromWishlist(token:string,vendorId:string){
+        try {
+            const isValidUser = this.JWTtoken.verifyJWT(token)
+            if(isValidUser){
+                const userId = isValidUser.id
+                const result = await this.iuserRepository.removeFromWishlist(userId,vendorId)
+                if(result != null){
+                    return {success:true}
+                }
             }
         } catch (error) {
             console.error(error)

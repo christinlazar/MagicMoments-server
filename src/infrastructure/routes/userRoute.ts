@@ -30,8 +30,8 @@ router.post('/resendOtp',(req,res)=>controller.resendOtp(req,res))
 router.post('/sendForgotMail',(req,res)=>controller.forgotMail(req,res))
 router.post('/verifyForgotOtp',(req,res)=>controller.verifyForgotOtp(req,res))
 router.post('/changePassword',(req,res)=>controller.chnagePassword(req,res))
-router.get('/getAllVendors',(req,res)=>controller.getAllVendors(req,res))
-router.post('/bringVendorDetial',(req,res)=>controller.getvendor(req,res))
+router.get('/getAllVendors',authenticateUser,(req,res)=>controller.getAllVendors(req,res))
+router.post('/bringVendorDetial',authenticateUser,(req,res)=>controller.getvendor(req,res))
 router.post('/stripe-payment',authenticateUser,(req,res)=>controller.makepayment(req,res))
 router.post('/sendBookingRequest',(req,res)=>controller.checkIsBookingAvailable(req,res))
 router.post('/isBookingAccepted',authenticateUser,(req,res)=>controller.checkIsBookingAccepted(req,res))
@@ -44,6 +44,11 @@ router.post('/bringPhotos',authenticateUser,(req,res)=>controller.bringPhotos(re
 router.post('/bringVideos',authenticateUser,(req,res)=>controller.bringVideos(req,res))
 router.post('/submitReview',authenticateUser,(req,res)=>controller.submitReview(req,res))
 router.post('/getReviews',authenticateUser,(req,res)=>controller.getReviews(req,res))
-
+router.post('/searchVendor',authenticateUser,(req,res)=>controller.getSearchCoodrinates(req,res))
+router.post('/fetchplaces',authenticateUser,(req,res)=>controller.fetchplaces(req,res))
+router.post('/addtoWishlist',authenticateUser,(req,res)=>controller.addtoWishlist(req,res))
+router.get('/getuserData',authenticateUser,(req,res)=>controller.getUser(req,res))
+router.get('/wishlist',authenticateUser,(req,res)=>controller.getWishlistData(req,res))
+router.post('/removefromwishlist',authenticateUser,(req,res)=>controller.removefromWishList(req,res))
 
 export default router

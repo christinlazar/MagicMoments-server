@@ -86,7 +86,7 @@ class userController{
             }
     }
     async verifyRefreshToken(req:Request,res:Response){
-        console.log("inside verifyrefresh in userController")
+        console.log("Christin inside verifyrefresh in userController ")
         const refreshToken = req.cookies.refreshToken;
         console.log(req.cookies)
         console.log("refreshtoken is",refreshToken)
@@ -365,6 +365,122 @@ class userController{
             }
         } catch (error) {
             console.error(error)
+        }
+    }
+
+    async getSearchCoodrinates(req:Request,res:Response){
+        try {
+          const {searchValue} = req.body
+          console.log("sch valueeee",searchValue)
+          if(searchValue.trim() == ''){
+            return res.json({success:false})
+          }
+          const mykey = 'AIzaSyCdRUMgE09rO2dkbmmZR_ZVJnS1yJL8oWY'
+          const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${searchValue}&key=${mykey}`)
+
+          console.log("r",response.data.results[0].geometry.location)
+          const {lat,lng} = response.data.results[0].geometry.location
+          const result = await this.usercase.getVendorAccordingTolocation(lat,lng,searchValue)
+          if(result?.success){
+            return res.status(200).json({success:true,vendors:result.vendors})
+          }
+        } catch (error) {
+            console.error(error)
+            return res.json({success:false})
+        }
+    }
+
+    async fetchplaces(req:Request,res:Response){
+        try {
+            
+            let {place,radius} = req.body
+            radius = 50000
+            console.log("req.body",place,radius)
+            // const mykey = 'AIzaSyCdRUMgE09rO2dkbmmZR_ZVJnS1yJL8oWY'
+            // const response1 = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${place}&key=${mykey}`)
+            // const {lat,lng} = response1.data.results[0].geometry.location
+
+            const response = await axios.post('https://places.googleapis.com/v1/places:autocomplete',{
+            "input": place,
+            "locationBias": {
+              "circle": {
+                "center": {
+                //   "latitude":lat,
+                //   "longitude": lng
+                },
+                "radius": 50000
+              }
+            }
+          },{
+            headers:{
+                'Content-Type' : 'application/json',
+                'X-Goog-Api-Key': 'AIzaSyCdRUMgE09rO2dkbmmZR_ZVJnS1yJL8oWY'
+            }
+          })
+
+            console.log("response from places api is",response.data)
+            const placesarr:string[] = []
+            response.data.suggestions.forEach((pl:any)=>placesarr.push(pl.placePrediction.text.text))
+            console.log(placesarr)
+            return res.status(200).json({success:true,places:placesarr})
+        } catch (error) {
+            console.error(error)
+            return res.status(400).json({success:false})
+        }
+    }
+
+    async addtoWishlist(req:Request,res:Response){
+        try {
+            const {vendorId} = req.body
+            const token = req.headers.authorization?.split(' ')[1] as string 
+            const result = await this.usercase.addToWishList(vendorId,token)
+            if(result?.success == false){
+                return res.json({success:false})
+            }
+            if(result?.success){
+                return res.status(200).json({success:true,user:result.user})
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async getUser(req:Request,res:Response){
+        try {
+            const token = req.headers.authorization?.split(' ')[1] as string
+            const result = await this.usercase.getUserData(token)
+            if(result?.success){
+                return res.status(200).json({success:true,user:result.user})
+            }else{
+                return res.json({success:false})
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async getWishlistData(req:Request,res:Response){
+        try {
+            const token = req.headers.authorization?.split(' ')[1] as string
+            const result = await this.usercase.getWishlistData(token)
+            if(result?.success){
+                return res.status(200).json({success:true,wishlist:result.wishlistData})
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async removefromWishList(req:Request,res:Response){
+        try {
+            const {vendorId} = req.body
+            const token = req.headers.authorization?.split(' ')[1] as string
+            const result = await this.usercase.removeFromWishlist(token,vendorId)
+            if(result?.success){
+                return res.status(200).json({success:true})
+            }
+        } catch (error) {
+            
         }
     }
     

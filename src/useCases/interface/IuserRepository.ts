@@ -23,6 +23,11 @@ interface IuserRepository{
     getVideos(vendorId:string):Promise<Vendor | null>
     submitreview(review:string,rating:number | string,vendorId:string,userId:string):Promise<reviewInterface | null>
     getreviews(vendorId:string):Promise<reviewInterface[] | null>
+    findByCoordinates(lat:string | number,lng:string | number,searchValue:string):Promise<Vendor[] | null | undefined>
+    addtoWishlist(vendorId:string,userId:string):Promise<User | null | undefined | boolean>
+    getUserData(userId:string):Promise<User | null>
+    getWishlist(userId:string):Promise<any | null>
+    removeFromWishlist(userId:string,vendorId:string):Promise<User | null | undefined>
 }
 
 export default IuserRepository;

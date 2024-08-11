@@ -3,6 +3,10 @@ export enum AcceptanceStatus {
     Accepted = 'accepted',
     Rejected = 'rejected'
 }
+interface Location {
+    type: 'Point'; 
+    coordinates: [number,number]; 
+}
 interface Vendor{
     _id?:string;
     companyName:string;
@@ -19,10 +23,7 @@ interface Vendor{
     startingPrice:string;
     unAvailableDates:string[];
     services?:string[];
-    location:{
-        lat:number,
-        lng:number,
-    }[];
+    locations:Location[];
     isBlocked:boolean;
 }
 

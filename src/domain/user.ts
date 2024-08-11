@@ -1,3 +1,4 @@
+import { Types,Document } from "mongoose"
 interface User{
     _id?:string,
     name:string,
@@ -6,6 +7,7 @@ interface User{
     password:string,
     isBlocked:boolean,
     phone:number,
+    wishlist:Types.ObjectId[],
     createdAt:Date
 }
 export default User

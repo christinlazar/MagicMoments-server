@@ -1,6 +1,7 @@
 import Admin from "../../domain/admin";
 import User from "../../domain/user";
 import Vendor from "../../domain/vendor";
+import bookingInt from "../../domain/bookings";
 interface IAdminRepository{
     findByEmail(email:string):Promise<Admin | null>;
     findUsers():Promise<User[] | null>;
@@ -12,6 +13,9 @@ interface IAdminRepository{
     acceptRequest(vendorId:string):Promise<Vendor|null>
     rejectRequest(vendorId:string):Promise<Vendor|null>
     deleteVendor(vendorId:string):Promise<Vendor | null>
+    getMonthlyBooking():Promise<bookingInt[] | null | any>
+    getUsersAndVendors():Promise<any | null>
+    getYealyBooking():Promise<bookingInt[] | null | any>
 }
 
 export default IAdminRepository

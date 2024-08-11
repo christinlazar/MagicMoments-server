@@ -25,6 +25,10 @@ const userSchema:Schema<User> = new Schema({
     phone:{
         type:Number
     },
+    wishlist:{
+        type:[Schema.Types.ObjectId],
+        ref:'Vendor'
+    }
     
 },{timestamps:true});
 const userModel : Model<User> = mongoose.model<User>('User',userSchema)
