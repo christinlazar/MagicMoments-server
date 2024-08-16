@@ -72,6 +72,18 @@ class vendorRepository implements IVendorRepository{
         }
     }
 
+    async editCompanyInfo(vendorId: string, formData: any): Promise<Vendor | null> {
+        try {
+            const {description,phoneNumber,startingPrice} = formData
+            const vendor = await vendorModel.findOneAndUpdate({_id:vendorId},{$set:{phoneNumber:phoneNumber,description:description,startingPrice:startingPrice}})
+            console.log("vendor",vendor);
+            return vendor  
+        } catch (error) {
+            console.error(error)
+            return null
+        }
+    }
+
     async getVendorData(vendorId: string): Promise<Vendor | null> {
         try {
             console.log("get in getvendorData")

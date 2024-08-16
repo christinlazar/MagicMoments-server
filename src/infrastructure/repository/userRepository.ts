@@ -269,8 +269,14 @@ class userRepository implements IuserRepository{
         }
     }
 
-    async submitreview(review: string, rating: number | string, vendorId: string, userId: string): Promise<reviewInterface | null> {
+    async submitreview(review: string, rating: number | string, vendorId: string, userId: string): Promise<reviewInterface | null | boolean> {
         try {
+
+            const isAllowed = await bookingModel.findOne({userId:userId,vendorId:vendorId})
+            if(isAllowed == null){
+                return false
+            }
+            console.log("isAllowedddddddddd",isAllowed)
             const reviewData = {
                 vendorId,
                 userId,
@@ -379,6 +385,16 @@ class userRepository implements IuserRepository{
     async removeFromWishlist(userId: string, vendorId: string): Promise<User | null | undefined> {
         try {
             const result = await userModel.findByIdAndUpdate({_id:userId},{$pull:{wishlist:vendorId}},{new:true})
+            return result
+        } catch (error) {
+            console.error(error)
+            return null
+        }
+    }
+
+    async editReview(review: string, reviewId: string): Promise<reviewInterface | null> {
+        try {
+            const result = await reviewModel.findOneAndUpdate({_id:reviewId},{$set:{review:review}},{new:true})
             return result
         } catch (error) {
             console.error(error)

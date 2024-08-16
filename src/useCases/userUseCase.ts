@@ -406,9 +406,13 @@ class userUsecase{
             if(verifiedToken){
                 const userId = verifiedToken.id
                 const result = await this.iuserRepository.submitreview(review,rating,vendorId,userId)
-                if(result){
+                if(result != null && result != false){
                     return {success:true,reviewData:result}
-                }else{
+                }
+                if(result == false){
+                    return {allowed:false}
+                }
+                else{
                     return {success:false}
                 }
             }
@@ -499,6 +503,17 @@ class userUsecase{
         } catch (error) {
             console.error(error)
         }
+    }
+
+    async editreview(review:string,reviewId:string){
+            try {
+                const result = await this.iuserRepository.editReview(review,reviewId)
+                if(result != null){
+                    return {success:true}
+                }
+            } catch (error) {
+                
+            }
     }
 }
 

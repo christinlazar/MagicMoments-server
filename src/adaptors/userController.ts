@@ -347,7 +347,10 @@ class userController{
             const result = await this.usercase.submitReview(review,rating,vendorId,token)
             if(result?.success){
                 return res.status(200).json({success:true,reviews:result.reviewData})
-            }else{
+            }else if(result?.allowed == false){
+                return res.json({isAllowed:false})
+            }
+            else{
                 return res.json({success:false})
             }
         } catch (error) {
@@ -396,10 +399,6 @@ class userController{
             let {place,radius} = req.body
             radius = 50000
             console.log("req.body",place,radius)
-            // const mykey = 'AIzaSyCdRUMgE09rO2dkbmmZR_ZVJnS1yJL8oWY'
-            // const response1 = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${place}&key=${mykey}`)
-            // const {lat,lng} = response1.data.results[0].geometry.location
-
             const response = await axios.post('https://places.googleapis.com/v1/places:autocomplete',{
             "input": place,
             "locationBias": {
@@ -483,6 +482,20 @@ class userController{
             
         }
     }
+
+    async editReview(req:Request,res:Response){
+        try {
+            const {review,reviewId} = req.body
+            const result = await this.usercase.editreview(review,reviewId)
+            if(result?.success){
+                return res.status(200).json({success:true})
+            }
+        } catch (error) {
+            
+        }
+    }
+
+ 
     
 }
 export default userController;

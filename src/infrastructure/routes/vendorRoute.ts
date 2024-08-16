@@ -29,6 +29,7 @@ router.post('/refresh-token',(req,res)=>controller.verifyRefreshToken(req,res))
 router.post('/addPhotos',authenticateVendor,upload.array('photos',10),(req,res)=>controller.addPhotographs(req,res))
 router.post('/addVideos',authenticateVendor,upload.array('videos'),(req,res)=>controller.addVideographs(req,res))
 router.post('/submitStoreDetials',authenticateVendor,(req,res)=>controller.addBasicCompanyInfo(req,res))
+router.post('/editDetails',authenticateVendor,(req,res)=>controller.editCompanyDetails(req,res))
 router.get('/getVendorData',authenticateVendor,(req,res)=>controller.getVendorData(req,res))
 router.post('/unAvailableDates',authenticateVendor,(req,res)=>controller.addUnavailableDates(req,res))
 router.get('/getBookingRequests',authenticateVendor,(req,res)=>controller.getBookingRequests(req,res))
@@ -36,6 +37,7 @@ router.post('/acceptBookingrequest',authenticateVendor,(req,res)=>controller.acc
 router.get('/fetchBookings',authenticateVendor,(req,res)=>controller.getBookings(req,res))
 router.post('/addServices',authenticateVendor,(req,res)=>controller.addServices(req,res))
 router.post('/addLongLang',authenticateVendor,(req,res)=>controller.addLongitudeLangitude(req,res))
+
 
 
 

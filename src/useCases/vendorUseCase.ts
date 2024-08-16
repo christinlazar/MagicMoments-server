@@ -97,17 +97,22 @@ class vendorUseCase{
             let isExistingVendor = await this.ivendorRepository.findByEmail(email)
             console.log("isexisting",isExistingVendor)
             if(isExistingVendor){
-                let isPasswordCorrect = await this.hashPassword.compare(password,isExistingVendor.password)
-                console.log("isPasswordCorrect",isPasswordCorrect)
-                if(isPasswordCorrect == true && isExistingVendor.isAccepted  == AcceptanceStatus.Accepted){
-                       const accessToken =  this.jwtToken.createJWT(isExistingVendor._id as string,'vendor')
-                       const refreshToken =  this.jwtToken.createRefreshToken(isExistingVendor._id as string)
-                       return {success:true,accessToken,refreshToken}
-                }else if(isPasswordCorrect == false && isExistingVendor.isAccepted == AcceptanceStatus.Accepted){
-                        return {passwordIncorrect:true,message:'Password is incorrect'}
+                if(isExistingVendor.isBlocked == false){
+                    let isPasswordCorrect = await this.hashPassword.compare(password,isExistingVendor.password)
+                    console.log("isPasswordCorrect",isPasswordCorrect)
+                    if(isPasswordCorrect == true && isExistingVendor.isAccepted  == AcceptanceStatus.Accepted){
+                           const accessToken =  this.jwtToken.createJWT(isExistingVendor._id as string,'vendor')
+                           const refreshToken =  this.jwtToken.createRefreshToken(isExistingVendor._id as string)
+                           return {success:true,accessToken,refreshToken}
+                    }else if(isPasswordCorrect == false && isExistingVendor.isAccepted == AcceptanceStatus.Accepted){
+                            return {passwordIncorrect:true,message:'Password is incorrect'}
+                    }else{
+                        return {success:false,message:'Admin still havent accepted the request'}
+                    }
                 }else{
-                    return {success:false,message:'Admin still havent accepted the request'}
+                    return {message2:"you have been blocked"}
                 }
+              
             }
         } catch (error) {
             console.error(error)
@@ -218,6 +223,21 @@ class vendorUseCase{
             }
         } catch (error) {
             
+        }
+    }
+
+    async editCompanydetails(token:string,formData:any){
+        try {
+            const verifiedToken = this.jwtToken.verifyJWT(token)
+            if(verifiedToken != null){
+                const vendorId = verifiedToken.id;
+                const result = await this.ivendorRepository.editCompanyInfo(vendorId,formData)
+                if(result != null){
+                    return {success:true}
+                }
+            }
+        } catch (error) {
+            console.error(error)
         }
     }
 
