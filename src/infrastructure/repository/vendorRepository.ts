@@ -40,7 +40,6 @@ class vendorRepository implements IVendorRepository{
 
     async  savePhotos(urls:string[],vendorId:string): Promise<Vendor | null> {
         try {
-            console.log("urls is" ,urls)
             const vendor = await vendorModel.findOneAndUpdate({_id:vendorId},{$push:{photos:{$each:urls}}},{new:true})
             return vendor
         } catch (error) {
@@ -51,7 +50,6 @@ class vendorRepository implements IVendorRepository{
 
     async saveVideos(urls:string[],vendorId:string):Promise<Vendor | null> {
         try {
-            console.log("video urls are",urls)
             const vendor = await vendorModel.findOneAndUpdate({_id:vendorId},{$push:{videos:{$each:urls}}},{new:true})
             return vendor
         } catch (error) {
@@ -63,8 +61,7 @@ class vendorRepository implements IVendorRepository{
      async saveCompanyInfo(vendorId: string, formData: any): Promise<Vendor | null> {
         try {
             const {description,phoneNumber,startingPrice} = formData
-            const vendor = await vendorModel.findOneAndUpdate({_id:vendorId},{$set:{phoneNumber:phoneNumber,description:description,startingPrice:startingPrice}})
-            console.log("vendor",vendor);
+            const vendor = await vendorModel.findOneAndUpdate({_id:vendorId},{$set:{phoneNumber:phoneNumber,description:description,startingPrice:parseInt(startingPrice)}})
             return vendor  
         } catch (error) {
             console.error(error)
@@ -76,7 +73,7 @@ class vendorRepository implements IVendorRepository{
         try {
             const {description,phoneNumber,startingPrice} = formData
             const vendor = await vendorModel.findOneAndUpdate({_id:vendorId},{$set:{phoneNumber:phoneNumber,description:description,startingPrice:startingPrice}})
-            console.log("vendor",vendor);
+ 
             return vendor  
         } catch (error) {
             console.error(error)
@@ -86,7 +83,7 @@ class vendorRepository implements IVendorRepository{
 
     async getVendorData(vendorId: string): Promise<Vendor | null> {
         try {
-            console.log("get in getvendorData")
+     
             const vendor = await vendorModel.findOne({_id:vendorId})
             return vendor
         } catch (error) {
@@ -98,7 +95,7 @@ class vendorRepository implements IVendorRepository{
     async  getVendors(): Promise< Vendor[] | null> {
         try {
             const vendors = await vendorModel.find({})
-            console.log("vendors in repo",vendors);
+      
             
             return vendors
         } catch (error) {
@@ -109,7 +106,7 @@ class vendorRepository implements IVendorRepository{
 
     async  getVendor(vendorId: string): Promise<Vendor | null> {
         try {
-            console.log("vendorId is",vendorId)
+      
             const vendor = await vendorModel.findOne({_id:vendorId})
             return vendor
         } catch (error) {
@@ -120,14 +117,12 @@ class vendorRepository implements IVendorRepository{
 
     async addDates(dates: string[],vendorId:string): Promise<Vendor | null | boolean> {
         try {
-            console.log("dates array is",dates)
+         
             const vendorData:any = await vendorModel.findOne({_id:vendorId})
-            console.log("vend",vendorData)
             for(let i = 0;i<dates.length;i++){
-                console.log(dates[i])
+
              for(let j = 0 ;j<vendorData?.unAvailableDates.length;j++){
                 if(vendorData.unAvailableDates[j] == dates[i]){
-                    console.log("in thissssssssssssss");
                     
                     return false
                 }
@@ -143,9 +138,7 @@ class vendorRepository implements IVendorRepository{
 
     async  getBookingRequests(vendorId:string): Promise< bookingInterface[] | null> {
         try {
-            const bookingReqs = await bookingRequestModel.find({vendorId:vendorId})
-            console.log("logging",bookingReqs);
-            
+            const bookingReqs = await bookingRequestModel.find({vendorId:vendorId})    
             return bookingReqs
         } catch (error) {
             console.error(error)
@@ -175,11 +168,9 @@ class vendorRepository implements IVendorRepository{
 
     async addEventDate(eventDate: string, vendorId: string): Promise<Vendor | null> {
         try {
-            console.log("in ADDeventdate");
-            console.log(vendorId)
             const [year,month,day] = eventDate.split('-')
             let newDate = `${day}/${month}/${year}`
-            console.log("newDate",newDate)
+       
             const vendor = await vendorModel.findOneAndUpdate({_id:vendorId},{$push:{unAvailableDates:newDate}},{new:true})
             return vendor
         } catch (error) {
@@ -222,8 +213,6 @@ class vendorRepository implements IVendorRepository{
             const ven =  await vendorModel.findOne({_id:vendorId})
             const lat = positions.lat 
             const lng = positions.lng
-            console.log(typeof(lat))
-            console.log(typeof(lng))
             const newLocation = {
                 location:{
                     type:"Point",
@@ -237,7 +226,6 @@ class vendorRepository implements IVendorRepository{
                 }
             })
             if(isExists){
-                console.log("isExists",isExists)
                 return false
             }
             const dataAfterAddingLocation = await vendorModel.findByIdAndUpdate({_id:vendorId},{$push:{locations:newLocation}},{new:true})

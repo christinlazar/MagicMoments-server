@@ -17,8 +17,6 @@ class chatRespository implements IchatRepository{
                     ]}
                 }).populate('messages')
 
-                console.log("conversation is",conversations)
-
                 if(!conversations){
                     let conversation = new conversationModel({
                         participants:[
@@ -57,13 +55,9 @@ class chatRespository implements IchatRepository{
             let conversation
             if(savedMessage){
                  conversation = await conversationModel.findOneAndUpdate({_id:conversationId},{$push:{messages:savedMessage._id}},{new:true}).populate('messages')
-                console.log("populated",conversation)
             }
             if(conversation){
-                console.log("receiverrrr",receiverId)
-                console.log("conversation",conversationId)
                 const receiverSocketId = getReceiverSocketId(receiverId.participantId)
-                console.log("receiverSocketid1 is",receiverSocketId)
                 if(receiverSocketId){
                    const io = getSocketServer()
                     io.to(receiverSocketId).emit('newConversation',conversation)
@@ -81,7 +75,7 @@ class chatRespository implements IchatRepository{
 
     async getUserChat(vendorId: string): Promise<any| null> {
         try {
-            console.log("gotUserChat")
+          
             const conversations = await conversationModel.find({
                 participants:{$all:[
                     {$elemMatch:{participantId:vendorId,participantModel:'Vendor'}}
@@ -90,17 +84,17 @@ class chatRespository implements IchatRepository{
             
 
             let newConversations = [...conversations]
-            console.log("newConv",newConversations)
+       
             const userIds:any = newConversations.map((conv:any)=>conv.participants[0].participantId)
             let users = []
-            console.log("userIds",userIds)
+        
             for(let  i = 0;i<userIds.length;i++){
                 const userId = userIds[i]
-                console.log("us",userId)
+            
                 const udata = await userModel.findOne({_id:userId})
                 users.push(udata)
             }
-            console.log("useers is",users)
+    
             return {conversations,users}
         } catch (error) {
             return null
@@ -115,7 +109,7 @@ class chatRespository implements IchatRepository{
                     {$elemMatch:{participantId:vendorId,participantModel:'Vendor'}}
                 ]}
             }).populate('messages')
-            console.log("messages in getvendoruserchat",conversations)
+           
             return conversations
         } catch (error) {
             console.error(error)
@@ -139,11 +133,11 @@ class chatRespository implements IchatRepository{
             let conversation
             if(savedMessage){
                  conversation = await conversationModel.findOneAndUpdate({_id:conversationId},{$push:{messages:savedMessage._id}},{new:true}).populate('messages')
-                console.log("populated",conversation)
+             
             }
             if(conversation){
                 const receiverSocketId = getReceiverSocketId(receiverId)
-                console.log("receiverSocketid2 is",receiverSocketId)
+             
                 if(receiverSocketId){
                     
                     const io = getSocketServer()

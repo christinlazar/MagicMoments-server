@@ -26,11 +26,9 @@ class adminUseCase{
         try {
             const adminData = await this.iAdminRepository.findByEmail(email)
            if(adminData){
-            console.log(adminData)
             if(password == adminData.password){
                 const accessToken = await this.jwtToken.createJWT(adminData._id as string,'admin')
                 const refreshToken = await this.jwtToken.createRefreshToken(adminData._id as string)
-                console.log(`accesstoken is ${accessToken} ,refreshToken is ${refreshToken}`)
                return {success:true,accessToken,refreshToken}
             }else{
                 return {success:false,message:"password doesn't matches"}
@@ -43,9 +41,7 @@ class adminUseCase{
 
     async findUsersFromRepo(){
         try {
-            console.log("here in findUsers2")
             const users = await this.iAdminRepository.findUsers()
-            console.log(users)
             if(users){
                 return users
             }else{
@@ -58,7 +54,6 @@ class adminUseCase{
 
     async blocktheuser(userId:string){
         try {
-            console.log("inside block the user in usecase")
             const res = await this.iAdminRepository.blockuser(userId)
             if(res){
                 return {success:true}
@@ -70,7 +65,6 @@ class adminUseCase{
 
     async unBlockTheUser(userId:string){
         try {
-            console.log("getting inside unblocking user")
             const res = await this.iAdminRepository.unblockuser(userId)
             if(res){
                 return {success:true}
@@ -82,13 +76,10 @@ class adminUseCase{
     async verifyRefreshToken(token:string){
         try {
             const res =  this.jwtToken.verifyRefreshToken(token)
-            console.log("resssss isss",res)
             if(res != null){
-                console.log("refresh token is",res)
                 const userID = res.id 
                 const role = 'admin'
                 const token =  this.jwtToken.createJWT(userID,role)
-                console.log("token is",token)
                 return token
             }else if(res == null){
                 return null
@@ -180,6 +171,27 @@ class adminUseCase{
             const result = await this.iAdminRepository.getYealyBooking()
             if(result != null){
                 return {success:true,yearlyData:result}
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async getbookings(){
+        try {
+            const result = await this.iAdminRepository.getBookings()
+            if(result != null){
+                return {success:true,bookings:result}
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+    async sortbyDate(startDate:string,endDate:string){
+        try {
+            const result = await this.iAdminRepository.sortByDate(startDate,endDate)
+            if(result != null){
+                return {success:true,filteredBookings:result}
             }
         } catch (error) {
             console.error(error)

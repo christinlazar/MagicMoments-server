@@ -18,11 +18,9 @@ class chatCase{
     async getVendorChat(token:string,vendorId:string){
         try {
             let isVerifiedToken =  this.jwtToken.verifyJWT(token)
-            console.log(isVerifiedToken)
             if(isVerifiedToken){
                 const senderId = isVerifiedToken.id
                 const result = await this.chatRepo.getvendorChat(token,vendorId,senderId)
-                console.log(result)
                 if(result != null){
                     return {success:true,conversation:result}
                 }
@@ -49,7 +47,6 @@ class chatCase{
 
     async collectUserChats(token:string){
         try {
-            console.log("gettting in collectUserChats")
             const validToken = this.jwtToken.verifyJWT(token)
             if(validToken){
                 const vendorId = validToken.id
@@ -90,15 +87,6 @@ class chatCase{
         }
     }
 
-    // async sendMessageReq(token:string){
-    //     try {
-    //         const isValidToken = this.jwtToken.verifyJWT(token)
-    //         const userId = isValidToken?.id
-    //         const result = await this.chatRepo.sendVideoCallRequest(userId)
-    //     } catch (error) {
-    //         console.error(error)
-    //     }
-    // }
 }
 
 export default chatCase

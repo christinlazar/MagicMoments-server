@@ -16,6 +16,8 @@ interface IAdminRepository{
     getMonthlyBooking():Promise<bookingInt[] | null | any>
     getUsersAndVendors():Promise<any | null>
     getYealyBooking():Promise<bookingInt[] | null | any>
+    getBookings():Promise<bookingInt[] | null>
+    sortByDate(startDate:string,endDate:string):Promise<bookingInt[] | null>
 }
 
 export default IAdminRepository

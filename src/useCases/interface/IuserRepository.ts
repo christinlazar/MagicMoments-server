@@ -15,7 +15,7 @@ interface IuserRepository{
     findUser(userId:string):Promise< User | null>
     isBookingAccepted(userId:string,vendorId:string):Promise<bookingInterface | null>
     isBookingExisting(userId:string,vendorId:string ):Promise<bookingInterface | null>
-    confirmBooking(bookingId:string,amountPaid:string):Promise<bookingInt | null | undefined | boolean>
+    confirmBooking(bookingId:string,amountPaid:string,paymentId:string):Promise<bookingInt | null | undefined | boolean>
     findTheBookings(userid:string):Promise<bookingInt[] | null>
     findBookingReqs(userid:string):Promise<bookingInterface[] | null>
     cancelBookingRequest(bookingId:string):Promise<bookingInterface | null>
@@ -29,6 +29,10 @@ interface IuserRepository{
     getWishlist(userId:string):Promise<any | null>
     removeFromWishlist(userId:string,vendorId:string):Promise<User | null | undefined>
     editReview(review:string,reviewId:string):Promise<reviewInterface | null>
+    searchByCompanyName(companyName:string):Promise<bookingInt[] | null>
+    sortbydate(startDate:string,endDate:string):Promise<bookingInt[] | null>
+    sortbyprice(criteria:string):Promise<Vendor[] | null | undefined>
+    cancelBooking(bookingId:string):Promise<bookingInt | null | boolean>
 }
 
 export default IuserRepository;

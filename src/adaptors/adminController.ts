@@ -9,16 +9,12 @@ class adminController{
 
     async adminLogin(req:Request,res:Response){
         try {
-            console.log("getting in adminlogi server")
-            console.log(req.headers)
             const adminInfo = req.body
-           console.log(adminInfo)
            const result = await this.adminCase.adminLogin(adminInfo.email,adminInfo.password)
            if(result?.success){
             const refreshToken = result.refreshToken
             const accessToken = result.refreshToken
             res.cookie('refreshToken',refreshToken,{httpOnly:true})
-            console.log("result.token",result.accessToken)
             return res.status(200).json({success:true,accessToken,message:"login successfull"})
            }else{
             return res.status(401).json({success:false,message:"You are not authorised"})
@@ -30,9 +26,9 @@ class adminController{
 
     async findusers(req:Request,res:Response){
             try {
-                console.log("here in findUsers1")
+               
                 const result = await this.adminCase.findUsersFromRepo()
-                console.log("result is",result)
+             
                 if(result!= null){
                     return res.status(200).json({success:true,userData:result})
                 }
@@ -43,7 +39,7 @@ class adminController{
 
     async blockTheUser(req:Request,res:Response){
         try {
-            console.log("inside block the user in COntr")
+        
             const {userId} = req.body
             const result = await this.adminCase.blocktheuser(userId)
             if(result?.success){
@@ -57,7 +53,7 @@ class adminController{
     }
     async unblockTheUser(req:Request,res:Response){
         try {
-            console.log("inside unblock1")
+       
             const {userId} = req.body
             const result = await this.adminCase.unBlockTheUser(userId)
             if(result?.success){
@@ -71,17 +67,17 @@ class adminController{
     }
 
     async verifyRefreshToken(req:Request,res:Response){
-        console.log("inside verifyrefresh in adminController")
+    
         const refreshToken = req.cookies.refreshToken;
-        console.log("refreshtoken is",refreshToken)
+   
         if(!refreshToken){
-            console.log("its here in !refresh")
+    
             return res.status(401)
         }
         const accessToken = await this.adminCase.verifyRefreshToken(refreshToken)
-        console.log("accessToken---------",accessToken)
+     
         if(accessToken !== null){
-            console.log("Access token is",accessToken)
+           
             return res.status(200).json({accessToken,refresh:true})
         }else{
             return res.json({refresh:false,role:'admin'})
@@ -93,8 +89,8 @@ class adminController{
         try {
             const result = await this.adminCase.findVendors()
             return res.status(200).send({success:true,vendors:result?.vendors})
-        } catch (error) {
-            
+        } catch (error:any) {
+            console.error(error.message)
         }
     }
 
@@ -102,7 +98,6 @@ class adminController{
         try {
             const {vendorId} = req.body
             const result = await this.adminCase.blockTheVendor(vendorId)
-            console.log(result)
             res.status(200).json({success:true})
         } catch (error) {
             console.error(error)
@@ -113,7 +108,6 @@ class adminController{
         try {
             const {vendorId} = req.body
             const result = await this.adminCase.unblockTheVendor(vendorId)
-            console.log(result)
             res.status(200).json({success:true})
         } catch (error) {
             console.error(error)
@@ -139,8 +133,8 @@ class adminController{
             if(result?.rejected){
                 res.status(200).json({rejected:true})
             }
-        } catch (error) {
-            
+        } catch (error:any) {
+            console.error(error.message)
         }
     }
 
@@ -167,13 +161,35 @@ class adminController{
 
     async getYearlyData(req:Request,res:Response){
         try {
-            console.log("in here")
             const result = await this.adminCase.getYearlybooking()
             if(result?.success){
                 return res.status(200).json({success:true,yearlydata:result.yearlyData})
             }
         } catch (error) {
             console.error(error)
+        }
+    }
+
+    async getBookings(req:Request,res:Response){
+        try {
+            const result = await this.adminCase.getbookings()
+            if(result?.success){
+                return res.status(200).json({success:true,bookings:result.bookings})
+            }
+        } catch (error:any) {
+            console.error(error.message)
+        }
+    }
+
+    async sortByDate(req:Request,res:Response){
+        try {
+            const {startDate,endDate} = req.body
+            const result = await this.adminCase.sortbyDate(startDate,endDate)
+            if(result?.success){
+                return res.status(200).json({success:true,bookings:result.filteredBookings})
+            }
+        } catch (error:any) {
+            console.error(error.message)
         }
     }
 }

@@ -7,8 +7,10 @@ export enum PaymentStatus {
 
 interface bookingInt extends Document{
     _id?:string;
+    bookingId?:string
     vendorId:Types.ObjectId,
     userId:Types.ObjectId,
+    paymentId?:string
     clientName:string,
     startingDate:string,
     noOfDays:string,

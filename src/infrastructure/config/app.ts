@@ -28,6 +28,6 @@ export const createServer = () =>{
         socketServer(server)
         return server;
     } catch (error) {
-        console.log(error)
+        console.error(error)
     }
 }

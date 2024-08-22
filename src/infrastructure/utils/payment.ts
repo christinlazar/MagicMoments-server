@@ -12,7 +12,6 @@ const Api:AxiosInstance = axios.create({
 
 class makePayment implements IMakePayment {
     async makeThePayment(companyName:string,amount:string | any,bodyData:any,bookingData:any){
-        console.log("bodyData is",bodyData)
         const companyname = bodyData.companyName
         const vendorId = bodyData.vendorId
         const Amount = bodyData.amount
@@ -38,10 +37,23 @@ class makePayment implements IMakePayment {
             line_items:line_items,
             mode:'payment', 
            })
+           console.log("sesssion",session)
            return session
         } catch (error) {
             console.log("Error in payment",error)
         }
+    }
+
+    async refund(paymentId: string): Promise<any> {
+        const session = await stripe.checkout.sessions.retrieve(paymentId);
+        const paymentIntentId = session.payment_intent;
+        const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId)
+        const chargeId = paymentIntent.latest_charge
+        const refund = await stripe.refunds.create({
+            charge:chargeId,
+            amount:paymentIntent.amount
+        })
+        return refund
     }
 }
 

@@ -1,7 +1,12 @@
 import bookingInt, { PaymentStatus } from "../../domain/bookings";
 import mongoose, { Schema,Model } from "mongoose";
+import {v4 as uuid} from 'uuid'
 
 const bookingSchema:Schema<bookingInt> = new Schema({
+    bookingId:{
+        type:String,
+        default:uuid
+    },
     vendorId:{
         type:Schema.Types.ObjectId,
         ref:'Vendor',
@@ -11,6 +16,9 @@ const bookingSchema:Schema<bookingInt> = new Schema({
         type:Schema.Types.ObjectId,
         ref:'User',
         required:true
+    },
+    paymentId:{
+        type:String
     },
     clientName:{
         type:String,

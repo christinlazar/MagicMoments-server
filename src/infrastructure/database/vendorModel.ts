@@ -58,7 +58,7 @@ const VendorSchema: Schema<Vendor> = new Schema({
         type: String,
     },
     startingPrice: {
-        type: String,
+        type: mongoose.Schema.Types.Mixed,
     },
     unAvailableDates: {
         type: [String],

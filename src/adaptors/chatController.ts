@@ -24,12 +24,6 @@ class chatController{
         try {
             let token = req.headers.authorization?.split(' ')[1] as string
             const {message,conversationId,senderModel,receiverId,receiverModel} = req.body
-            console.log("message is",message)
-            console.log("conversationId",conversationId)
-            console.log("senderModel",senderModel)
-            console.log("receiverId",receiverId)
-            console.log("receiverModel",receiverModel)
-
             const result = await this.chatcase.sendmessage(message,conversationId,senderModel,receiverId,receiverModel,token)
             if(result?.success){
                 return res.status(200).json({success:true,conversations:result.conversations})
@@ -39,9 +33,7 @@ class chatController{
         }
     }
     async getUserChats(req:Request,res:Response){
-        try {
-            console.log("reached in to get chats");
-            
+        try {   
             const token = req.headers.authorization?.split(' ')[1] as string
             const result = await this.chatcase.collectUserChats(token)
             if(result?.success){
@@ -78,14 +70,7 @@ class chatController{
         }
     }
 
-    // async sendVideoCallRequest(req:Request,res:Response){
-    //     try {
-    //         const token = req.headers.authorization?.split(' ')[1] as string
-    //          const result = await this.chatcase.sendMessageReq(token)
-    //     } catch (error) {
-    //         console.error()
-    //     }
-    // }
+ 
     
 }
 

@@ -33,7 +33,7 @@ class userRepository implements IuserRepository{
 
      async saveUser(user: User){
         try{
-            console.log("inside saveUser of mongorepositry")
+       
             const newUser = new userModel(user)
             await newUser.save()
             return newUser
@@ -45,9 +45,8 @@ class userRepository implements IuserRepository{
 
     async  saveHashedPassword(password: string,email:string): Promise<User | null> {
         try {
-            console.log("password is",password)
+        
             const saveHashed = await userModel.findOneAndUpdate({email:email},{$set:{password:password}})
-            console.log(saveHashed)
             return saveHashed
         } catch (error) {
             console.log(error)
@@ -67,7 +66,7 @@ class userRepository implements IuserRepository{
 
     async  getVendor(vendorId: string): Promise<Vendor | null> {
         try {
-            console.log("vendorId is",vendorId)
+        
             const vendor = await vendorModel.findOne({_id:vendorId})
             return vendor
         } catch (error) {
@@ -79,11 +78,10 @@ class userRepository implements IuserRepository{
     async checkIsAvailable(date:string,vendorId:string): Promise <boolean | undefined > {
         try {
             const vendor = await vendorModel.findOne({_id:vendorId})
-            console.log("The vendor for booking is",vendor)
-            console.log("The date is",date)
+         
             const [year,month,day] = date.split('-')
             let newDate = `${day}/${month}/${year}`
-            console.log(newDate)
+          
             if(vendor){
                if(vendor.unAvailableDates.includes(newDate)){
                return false
@@ -107,7 +105,7 @@ class userRepository implements IuserRepository{
     
     async saveBookingRequest(userId: string, vendorId: string, startingDate: string, noOfDays: string,userName:string): Promise<bookingInterface | null> {
         try {
-            console.log("Im going to save the request");
+          
             
             const bookingData = {
                 vendorId,
@@ -137,8 +135,7 @@ class userRepository implements IuserRepository{
 
     async  isBookingExisting(userId:string,vendorId:string): Promise<bookingInterface | null> {
         try {
-            console.log("userIDDD is",userId)
-            console.log("vendorId",vendorId);
+       
             
             const bookingData = await bookingRequestModel.findOne({userId:userId,vendorId:vendorId})
             return bookingData
@@ -148,7 +145,7 @@ class userRepository implements IuserRepository{
         }
     }
 
-    async confirmBooking(bookingId: string,amountPaid:string): Promise<bookingInt | null | undefined | boolean> {
+    async confirmBooking(bookingId: string,amountPaid:string,paymentId:string): Promise<bookingInt | null | undefined | boolean> {
         try {
             const bookingData:any = await bookingRequestModel.findOne({_id:bookingId})
             const moneyPaid = Math.floor((parseInt(amountPaid) * bookingData?.noOfDays)/3)
@@ -156,6 +153,7 @@ class userRepository implements IuserRepository{
             const dataToConfirmBooking = {
                 vendorId:bookingData?.vendorId,
                 userId:bookingData?.userId,
+                paymentId:paymentId,
                 clientName:bookingData?.userName,
                 startingDate:bookingData?.startingDate,
                 noOfDays:bookingData?.noOfDays,
@@ -166,7 +164,7 @@ class userRepository implements IuserRepository{
             let theDate:any = dataToConfirmBooking.startingDate
             const [year,month,day] = theDate.split('-')
             let newDate = `${day}/${month}/${year}`
-            console.log("newDate",newDate)
+
             if(vendor?.unAvailableDates.includes(newDate)){
                 return false
             }
@@ -177,9 +175,9 @@ class userRepository implements IuserRepository{
                 let theDate:any = dataToConfirmBooking.startingDate
                 const [year,month,day] = theDate.split('-')
                 let newDate = `${day}/${month}/${year}`
-                console.log("newDate",newDate)
+             
                 let vendor = dataToConfirmBooking.vendorId
-                // console.log("the vendor is",vendor)
+                
                 
                 await vendorModel.findOneAndUpdate({_id:vendor},{$push:{unAvailableDates:newDate}},{new:true})
 
@@ -213,10 +211,10 @@ class userRepository implements IuserRepository{
 
     async findTheBookings(userid:string): Promise<bookingInt[] | null> {
         try {
-            console.log("userIddd",userid)
+         
             const usId = new mongoose.Types.ObjectId(userid)
           const bookings = await bookingModel.find({userId:usId}).populate('vendorId')
-            console.log("bookingssssssssssss",bookings)
+         
             return bookings
         } catch (error) {
             console.error(error)
@@ -226,7 +224,7 @@ class userRepository implements IuserRepository{
 
     async findBookingReqs(userid:string): Promise<bookingInterface[] | null> {
         try {
-            console.log("userIddd",userid)
+       
             const usId = new mongoose.Types.ObjectId(userid)
             const bookingReqs = await bookingRequestModel.find({userId:usId}).populate('vendorId')
             return bookingReqs
@@ -238,7 +236,7 @@ class userRepository implements IuserRepository{
 
     async cancelBookingRequest(bookingId: string): Promise<bookingInterface | null> {
         try {
-            console.log("bk id is",bookingId)
+          
             const bookingReq = await bookingRequestModel.findByIdAndDelete({_id:bookingId},{new:true})
             return bookingReq
         } catch (error) {
@@ -250,7 +248,7 @@ class userRepository implements IuserRepository{
     async getPhotos(vendorId:string): Promise<Vendor | null> {
         try {
             const vendor = await vendorModel.findOne({_id:vendorId})
-            console.log("vendor is",vendor)
+         
             return vendor
         } catch (error) {
             console.error(error)
@@ -261,7 +259,7 @@ class userRepository implements IuserRepository{
     async getVideos(vendorId: string): Promise<Vendor | null> {
         try {
             const vendor = await vendorModel.findOne({_id:vendorId})
-            console.log("vendor",vendor)
+        
             return vendor
         } catch (error) {
             console.error(error)
@@ -276,7 +274,7 @@ class userRepository implements IuserRepository{
             if(isAllowed == null){
                 return false
             }
-            console.log("isAllowedddddddddd",isAllowed)
+       
             const reviewData = {
                 vendorId,
                 userId,
@@ -298,9 +296,9 @@ class userRepository implements IuserRepository{
 
     async getreviews(vendorId:string): Promise<reviewInterface[] | null> {
         try {
-            console.log(vendorId)
+          
             const reviews  = await reviewModel.find({vendorId:vendorId}).populate('userId')
-            console.log("reviews is",reviews)
+        
             return reviews
         } catch (error) {
             console.error(error)
@@ -311,8 +309,7 @@ class userRepository implements IuserRepository{
     async findByCoordinates(lat:  number, lng: number,searchValue:string): Promise<Vendor[] | null | undefined> {
         try {
             let maxDistance = 25 * 1000
-            console.log(typeof(lat),typeof(lng))
-            console.log(lat,lng)
+          
             let vendors = await vendorModel.aggregate([
                 {
                     $geoNear:{
@@ -330,13 +327,13 @@ class userRepository implements IuserRepository{
 
             if (vendors.length === 0) {
                const pl = searchValue.split(',')[0]
-               console.log("pl is",pl)
+         
                 vendors = await vendorModel.find({
                     companyLocation: { $regex: pl, $options: 'i' } 
                 });
                 return vendors
             }
-            console.log("vendors issssssssssss",vendors)
+        
             return vendors
         } catch (error) {
             console.error(error)
@@ -396,6 +393,94 @@ class userRepository implements IuserRepository{
         try {
             const result = await reviewModel.findOneAndUpdate({_id:reviewId},{$set:{review:review}},{new:true})
             return result
+        } catch (error) {
+            console.error(error)
+            return null
+        }
+    }
+
+    async searchByCompanyName(companyName: string): Promise<bookingInt[] | null> {
+        try {
+            const regex = new RegExp(companyName,'i')
+
+            const bookings = await bookingModel.find()
+            .populate({
+              path: 'vendorId', 
+              match: { companyName: { $regex: regex } }, 
+            });
+
+            const filteredBookings = bookings.filter(booking=>booking.vendorId)
+            return filteredBookings
+
+            
+        } catch (error) {
+            console.error(error)
+            return null
+        }
+    }
+
+    async sortbydate(startDate: string, endDate: string): Promise<bookingInt[] | null> {
+        try {
+            const bookings = await bookingModel.find({
+                startingDate:{
+                    $gte:startDate,
+                    $lte:endDate
+                }
+            }).populate('userId').populate('vendorId')
+            return bookings
+        } catch (error:any) {
+           console.error(error)
+           return null
+        }
+    }
+
+    async sortbyprice(criteria: string): Promise<Vendor[] | null | undefined> {
+        try {
+            if(criteria == '10000-50000'){
+                const vendors = await vendorModel.find({
+                    startingPrice:{
+                        $gte:10000,
+                        $lt:50000,
+                    }
+                })
+                return vendors
+            }else if(criteria == '50000-100000'){
+                    const vendors = await vendorModel.find({
+                        startingPrice:{
+                            $gte:50000,
+                            $lt:100000
+                        }
+                    })
+             
+                return vendors
+            }else if(criteria == 'above-100000'){
+                    const vendors = await vendorModel.find({
+                        startingPrice:{
+                            $gte:100000
+                        }
+                    })
+          
+                return vendors
+
+            }else{
+                return undefined
+            }
+          
+        } catch (error:any) {
+          console.error(error)
+            return null
+        }
+    }
+
+    async cancelBooking(bookingId: string): Promise<bookingInt | null | boolean> {
+        try {
+            const result:any = await bookingModel.findOne({_id:bookingId}).populate('vendorId')
+            const vendorId = result.vendorId._id
+            const splittedDate = result.startingDate.split('-')
+            let datetoSplice =  `${splittedDate[2]}/${splittedDate[1]}/${splittedDate[0]}`
+            let afterDatesDeletion = await vendorModel.findOneAndUpdate({_id:vendorId},{$pull:{unAvailableDates:datetoSplice}})
+            const afterDeletion = await bookingModel.findByIdAndDelete({_id:bookingId})
+            return true
         } catch (error) {
             console.error(error)
             return null

@@ -8,6 +8,7 @@ import IMakePayment from "./interface/IMakePayment";
 import makePayment from "../infrastructure/utils/payment";
 
 import jwt from 'jsonwebtoken'
+import bookingModel from "../infrastructure/database/booking";
 class userUsecase{
     private  iuserRepository:IuserRepository;
     private otpGenerate:otpGenerate
@@ -16,6 +17,7 @@ class userUsecase{
     private hashpassword:hashPassword
     private makePayment:IMakePayment
     private reminderMail:any
+    private passPort:any
     constructor(
         iuserRepository:IuserRepository,
         otpGenerate:otpGenerate,
@@ -23,7 +25,7 @@ class userUsecase{
         sendMail:sendMail,
         hashPassword:hashPassword,
         makepayment:makePayment,
-        remindermail:any
+        remindermail:any,
 
     ){
         this.iuserRepository = iuserRepository 
@@ -37,7 +39,6 @@ class userUsecase{
 
     async findUser(userInfo:User){
         try {
-            console.log("inside findUSer")
             const userFound = await this.iuserRepository.findByEmail(userInfo.email,userInfo.phone);
             if(userFound){
                 return{
@@ -49,7 +50,6 @@ class userUsecase{
                 }
             }else{
                 const otp = await this.otpGenerate.generateOtp(4);
-                console.log(`otp is ${otp}`);
                 const otpExpiresAt:number =  Date.now()
                 
                 let token = jwt.sign(
@@ -77,20 +77,15 @@ class userUsecase{
 
     async saveUser(token:string,userOtp:string){
         try {
-            console.log("getting in save user")
            let decodeToken =   this.JWTtoken.verifyJWT(token)
-           console.log("decode token in saveUser in useCase",decodeToken)
            if(decodeToken){
-            console.log(decodeToken.otp,userOtp)
+         
             if(decodeToken.otp == userOtp){
                 const currentTime:number = Date.now()
-                console.log("currentTime",currentTime)
-                console.log("expiresAT",decodeToken.otpExpiresAt)
-                console.log("is",(currentTime -  decodeToken.otpExpiresAt))
                 const limitedTime:number = 30000
                 const expirationTime:number = currentTime -  decodeToken.otpExpiresAt
                 if((expirationTime < limitedTime)){
-                    console.log("just inside after calculation") 
+                
                     const hashedPaswword = await this.hashpassword.createHash(decodeToken.userInfo.password)
                     decodeToken.userInfo.password = hashedPaswword
                     const userSave = await this.iuserRepository.saveUser(decodeToken.userInfo)
@@ -101,7 +96,7 @@ class userUsecase{
                     return{success:false,message:"Otp has been expired"}
                 }
             }else{
-                console.log("otp is not correct")
+            
                 return{success:false,incorrectOtp:true,message:"Entered otp is not correct"}
             }
            }else{
@@ -113,25 +108,22 @@ class userUsecase{
     }
     async userLogin(email:string,password:string){
             try {
-                console.log("getting in useCase")
+               
                 const isValidUser = await this.iuserRepository.findByEmail(email)
                 if(isValidUser){
                     if(isValidUser.isBlocked != true){
-                        console.log("not blocked")
-                        console.log(isValidUser)
-                        console.log("getting in is validuser")
+                      
                         let isValidPassword = await this.hashpassword.compare(password,isValidUser.password)
-                        console.log(isValidPassword)
+                      
                         if(isValidPassword){
-                        console.log("getting in is validpwd")
+                       
                             const accessToken = this.JWTtoken.createJWT(isValidUser._id as string,"user")
                             const refreshToken = this.JWTtoken.createRefreshToken(isValidUser._id )
-                            console.log("refresh in userLogin is",refreshToken)
-                            console.log(accessToken,refreshToken)
+                           
                             return {success:true,accessToken,refreshToken}
                         }
                     }else{
-                        console.log("blocked")
+                      
                         return {blocked:true,message:'user has been blocked'}
                     }
                 }else{
@@ -144,7 +136,7 @@ class userUsecase{
     async verifyRefreshToken(token:string){
         try {
             const res =  await this.JWTtoken.verifyRefreshToken(token)
-            console.log("chhhh",res)
+       
             if(res != null){
                 const userID = res.id 
                 const role = "user"
@@ -211,11 +203,11 @@ class userUsecase{
 
     async changepassword(newPassword:string,email:string){
         try {
-            console.log("here in new password")
+         
             const hashedPassword = await this.hashpassword.createHash(newPassword)
-            console.log(hashedPassword)
+          
             const result = await this.iuserRepository.saveHashedPassword(hashedPassword,email)
-            console.log(result)
+        
              return {success:true}
         } catch (error) {
             console.log(error)
@@ -237,7 +229,7 @@ class userUsecase{
     async getThatVendor(vendorId:string){
         try {
             const vendor = await this.iuserRepository.getVendor(vendorId)
-            console.log("vendor",vendor)
+          
             if(vendor){
                 return {success:true,data:vendor}
             }else{
@@ -252,19 +244,12 @@ class userUsecase{
         try {
             const Token = await this.JWTtoken.verifyJWT(token)
             const user = await this.iuserRepository.findUser(Token?.id)
-            console.log("THE USER IS",user)
-            console.log("The user who requested is",user)
-            console.log("TOKEN IN IS BOOKING AVAILABLE",Token)
             const result = await this.iuserRepository.checkIsAvailable(date,vendorId)
-            console.log("is included",result)
+         
             if(result){
                 const userId = Token?.id
                 const userName = user?.name
-                console.log("userName is",userName)
-                console.log(userId)
-                console.log(Token)
                 const createBookingRequest = await this.iuserRepository.saveBookingRequest(userId,vendorId,date,totalNoOfDays,userName)
-                console.log("created booking request is",createBookingRequest)
                 if(createBookingRequest != null){
                 return {success:true,reqSend:true}
                 }
@@ -282,10 +267,9 @@ class userUsecase{
             const userId = isValidToken?.id
             const result = await this.iuserRepository.isBookingAccepted(userId,vendorId)
             if(result != null){
-                console.log("result before pay is",result)
                 return {success:true,result}
             }else{
-                console.log("result in else",result)
+              
                 return null
             }
         } catch (error) {
@@ -295,12 +279,12 @@ class userUsecase{
 
     async isbookingExisting(token:string,vendorId:string){
         try{
-            console.log("vendorId",vendorId)
+         
             const isValidToken = this.JWTtoken.verifyJWT(token)
-            console.log("isVlaidToken",isValidToken)
+          
             const userId = isValidToken?.id
             const result = await this.iuserRepository.isBookingExisting(userId,vendorId)
-            console.log("existing booking",result)
+         
             if(result != null){
                 return {success:false}
             }
@@ -312,16 +296,15 @@ class userUsecase{
     async makeBookingPayment(companyName:string | undefined,vendorId:string | undefined,amount:string | undefined,bodyData:any,bookingData:any){
         try {
             const result =  await this.makePayment.makeThePayment(companyName,amount,bodyData,bookingData)
-            console.log("result is",result)
             return result
         } catch (error) {
             
         }
     }
 
-    async confirmPayment(bookingId:string,amountPaid:string){
+    async confirmPayment(bookingId:string,amountPaid:string,paymentId:string){
         try {
-            const result = await this.iuserRepository.confirmBooking(bookingId,amountPaid)
+            const result = await this.iuserRepository.confirmBooking(bookingId,amountPaid,paymentId)
             if(result == false){
                 return {OtherUserBooked:true}
             }
@@ -339,9 +322,9 @@ class userUsecase{
             try {
                 const validToken = await this.JWTtoken.verifyJWT(token)
                 const userId = validToken?.id
-                console.log("userrrrrrrrr",userId)
+                
                 const result = await this.iuserRepository.findTheBookings(userId)
-                console.log("bookings is",result)
+               
                 if(result != null ){
                     return {success:true,bookings:result}
                 }
@@ -354,9 +337,9 @@ class userUsecase{
             try {
             const validToken = await this.JWTtoken.verifyJWT(token)
             const userId = validToken?.id
-            console.log("userrr",userId)
+            
             const result = await this.iuserRepository.findBookingReqs(userId)
-            console.log("bookingReqs",result)
+           
             if(result != null){
                 return {success:true,bookingReqs:result}
             }
@@ -378,8 +361,6 @@ class userUsecase{
 
     async getPhotos(vendorId:string){
         try {
-            console.log("in get photos useCase",vendorId);
-            
             const result = await this.iuserRepository.getPhotos(vendorId)
             if(result != null){
                 return {success:true,vendorData:result}
@@ -515,6 +496,77 @@ class userUsecase{
                 
             }
     }
+
+    async searchByCompanyName(companyName:string){
+        try {
+            const result = await this.iuserRepository.searchByCompanyName(companyName)
+            if(result != null){
+                return {success:true,bookings:result}
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async sortbydate(startDate:string,endDate:string){
+        try {
+            const result = await this.iuserRepository.sortbydate(startDate,endDate)
+            if(result != null){
+                return {success:true,bookings:result}
+            }
+        } catch (error) {
+            
+        }
+    }
+
+    async filterbyprice(criteria:string){
+        try {
+            const result = await this.iuserRepository.sortbyprice(criteria)
+            if(result != null && result != undefined){
+                return {success:true,vendors:result}
+            }
+        } catch (error:any) {
+           console.error(error)
+        }
+    }
+
+    async cancelBooking(bookingId:string){
+        try {
+            const booking = await bookingModel.findOne({_id:bookingId})
+            const paymentId = booking?.paymentId
+            const result = await this.makePayment.refund(paymentId)
+            if(result){
+            const result = await this.iuserRepository.cancelBooking(bookingId)
+            if(result != null){
+            return {success:true,cancelled:true}
+            }
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async googleSignup(name:string,email:string,password:string){
+        try {
+            const existingUser = await this.iuserRepository.findByEmail(email)
+            if(existingUser){
+                return {
+                    status:200,
+                    data:false
+                }
+            }else{
+                const hashedPassword = await this.hashpassword.createHash(password)
+                const userSave = await this.iuserRepository.saveUser({name,email,password:hashedPassword}as User)
+                return {
+                    status:200,
+                    data:userSave
+                }
+            }
+        } catch (error:any) {
+           console.error(error)
+        }
+    }
+
 }
 
 export default userUsecase

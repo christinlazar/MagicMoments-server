@@ -51,5 +51,11 @@ router.get('/getuserData',authenticateUser,(req,res)=>controller.getUser(req,res
 router.get('/wishlist',authenticateUser,(req,res)=>controller.getWishlistData(req,res))
 router.post('/removefromwishlist',authenticateUser,(req,res)=>controller.removefromWishList(req,res))
 router.post('/editReview',authenticateUser,(req,res)=>controller.editReview(req,res))
+router.post('/searchByCompany',authenticateUser,(req,res)=>controller.searchByCompany(req,res))
+router.post('/sortbydate',authenticateUser,(req,res)=>controller.sortbyDate(req,res))
+router.post('/filterbyprice',authenticateUser,(req,res)=>controller.filterByPrice(req,res))
+router.post('/bookingCancel',authenticateUser,(req,res)=>controller.cancelbooking(req,res))
+router.post('/gSignup',(req,res)=>controller.gSignUp(req,res))
+
 
 export default router

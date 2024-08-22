@@ -32,7 +32,6 @@ this.transporter.sendMail(mailOPtions,(err:any)=>{
     if(err){
         console.log(err)
     }else{
-        console.log("Sended succesfully")
             }
         })
     }

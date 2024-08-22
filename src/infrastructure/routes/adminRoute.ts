@@ -28,6 +28,8 @@ router.post('/rejectRequest',authenticateAdmin,(req,res)=>controller.rejectVendo
 router.get('/monthlyBooking',authenticateAdmin,(req,res)=>controller.getMonthlyBookingData(req,res))
 router.get('/getusersvendors',authenticateAdmin,(req,res)=>controller.getusersVednors(req,res))
 router.get('/yearlyBooking',authenticateAdmin,(req,res)=>controller.getYearlyData(req,res))
+router.get('/getBookings',authenticateAdmin,(req,res)=>controller.getBookings(req,res))
+router.post('/sortbyDate',authenticateAdmin,(req,res)=>controller.sortByDate(req,res))
 
 export default router
 

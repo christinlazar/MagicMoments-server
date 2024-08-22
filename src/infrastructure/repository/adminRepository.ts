@@ -29,10 +29,8 @@ class adminRepository implements IAdminRepository{
     }
 
     async blockuser(userId:string):Promise<null | User>{
-        console.log("going to block")
             const res = await userModel.findOneAndUpdate({_id:userId},{$set:{isBlocked:true}})
             if(res){
-                console.log(res)
                 return res
             }else{
                 return null
@@ -40,7 +38,6 @@ class adminRepository implements IAdminRepository{
     }
     
     async unblockuser(userId:string):Promise<null | User>{
-        console.log("going to unblock")
         const res = await userModel.findOneAndUpdate({_id:userId},{$set:{isBlocked:false}})
         if(res){
             return res
@@ -99,12 +96,10 @@ class adminRepository implements IAdminRepository{
                     $sort:{_id:1}
                 }
             ])
-            console.log("bookingData are",bookingData)
             const reformattedBooking = bookingData.map(monthly => ({
                 month:monthly._id,
                 total:monthly.totalBookings
             }))
-            console.log( console.log("reformattedBooking  are",reformattedBooking))
             return reformattedBooking
         } catch (error) {
             console.error(error)
@@ -134,7 +129,7 @@ class adminRepository implements IAdminRepository{
 
     async getYealyBooking(): Promise<bookingInt[] | null | any> {
         try {
-            console.log("getting n hereee")
+    
             const yearlyBookingData = await bookingModel.aggregate([
                 {
                     $group:{
@@ -146,7 +141,7 @@ class adminRepository implements IAdminRepository{
                     $sort:{_id:1}
                 }
             ]);
-            console.log("yearlyData",yearlyBookingData)
+          
             const reformattedData = yearlyBookingData.map((yearly)=>({
                 year:yearly._id,
                 total:yearly.totalBookings
@@ -158,6 +153,32 @@ class adminRepository implements IAdminRepository{
             
         }
     }
+
+    async getBookings(): Promise<bookingInt[] | null> {
+        try {
+            const bookings = await bookingModel.find({}).populate('vendorId').populate('userId')
+            return bookings
+        } catch (error) {
+            console.error(error)
+            return null
+        }
+    }
+
+    async sortByDate(startDate: string,endDate:string): Promise<bookingInt[] | null> {
+        try {
+            const filteredBookings = await bookingModel.find({
+                startingDate:{
+                    $gte:startDate,
+                    $lte:endDate
+                }
+            }).populate('vendorId').populate('userId')
+            return filteredBookings
+        } catch (error) {
+            console.error(error)
+            return null
+        }
+    }
+
 }
 
 export default adminRepository
