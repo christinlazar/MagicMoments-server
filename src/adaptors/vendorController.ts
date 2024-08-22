@@ -50,6 +50,9 @@ class vendorController{
         try {
             const {email,password} = req.body
             const result = await this.vendorCase.verifyLogin(email,password)
+            if(result?.message2){
+                return res.json({message2:result.message2})
+            }
             console.log("result in verify verndrologin",result)
             if(!result?.success && !result?.passwordIncorrect){
                 console.log("ivde ethind pedikanda")
@@ -57,6 +60,7 @@ class vendorController{
             }else if(result.passwordIncorrect){
                 res.json({passwordIncorrect:true})
             }  else if(result.success){
+                console.log("llllllllllllllllllllllllllll",result)
                 const refreshToken = result.refreshToken
                 const accessToken = result.accessToken
                 res.cookie('refreshToken',refreshToken,{httpOnly:true,maxAge: 7 * 24 * 60 * 60 * 1000})
@@ -158,6 +162,19 @@ class vendorController{
                 res.status(200).json({success:true,added:true})
             }else{
                 res.json({success:false,added:false})
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async editCompanyDetails(req:Request,res:Response){
+        try {
+            const {formData} = req.body
+            const token = req.headers.authorization?.split(' ')[1] as string
+            const result = await this.vendorCase.editCompanydetails(token,formData)
+            if(result?.success){
+                return res.status(200).json({success:true})
             }
         } catch (error) {
             console.error(error)
@@ -275,6 +292,22 @@ class vendorController{
             if(result?.success){
                 return res.status(200).json({success:true,serviceAdded:true})
             }else{
+                return res.json({success:false})
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async addLongitudeLangitude(req:Request,res:Response){
+        try {
+            const token = req.headers.authorization?.split(' ')[1] as string 
+            const {position} = req.body
+            console.log("position is",position)
+            const result = await this.vendorCase.addlongitudelangitude(position,token)
+            if(result?.success){
+                return res.status(200).json({success:true,vendorData:result.result})
+            }else if(result?.success == false){
                 return res.json({success:false})
             }
         } catch (error) {

@@ -7,6 +7,8 @@ import { userModel } from "../database/userModel";
 import Vendor from "../../domain/vendor";
 import vendorModel from "../database/vendorModel";
 import { AcceptanceStatus } from "../../domain/vendor";
+import bookingInt from "../../domain/bookings";
+import bookingModel from "../database/booking";
 
 class adminRepository implements IAdminRepository{
     async findByEmail(email: string):Promise<Admin | null> {
@@ -82,6 +84,79 @@ class adminRepository implements IAdminRepository{
      async deleteVendor(vendorId: string): Promise<Vendor | null> {
         const deletedVendor = await vendorModel.findOneAndDelete({_id:vendorId})
         return deletedVendor
+    }
+
+    async getMonthlyBooking(): Promise<bookingInt[] | null | any> {
+        try {
+            const bookingData = await bookingModel.aggregate([
+                {
+                    $group:{
+                        _id:{$month:'$createdAt'},
+                        totalBookings:{$sum:1}
+                    }
+                },
+                {
+                    $sort:{_id:1}
+                }
+            ])
+            console.log("bookingData are",bookingData)
+            const reformattedBooking = bookingData.map(monthly => ({
+                month:monthly._id,
+                total:monthly.totalBookings
+            }))
+            console.log( console.log("reformattedBooking  are",reformattedBooking))
+            return reformattedBooking
+        } catch (error) {
+            console.error(error)
+            return null
+        }
+    }
+
+    async getUsersAndVendors(): Promise<any | null> {
+        try {
+            const vendors = await vendorModel.find({})
+            const users = await userModel.find({})
+            const totalRevenue = await bookingModel.aggregate([
+                {
+                    $group:{
+                        _id:null,
+                        totalAmount:{$sum:{$toDouble: "$amountPaid" }}
+                    }
+                }
+            ])
+            const revenue = totalRevenue[0].totalAmount
+            return {vendors,users,revenue}
+        } catch (error) {
+            console.error(error)
+            return null
+        }
+    }
+
+    async getYealyBooking(): Promise<bookingInt[] | null | any> {
+        try {
+            console.log("getting n hereee")
+            const yearlyBookingData = await bookingModel.aggregate([
+                {
+                    $group:{
+                        _id:{$year:'$createdAt'},
+                        totalBookings:{$sum:1}
+                    }
+                },
+                {
+                    $sort:{_id:1}
+                }
+            ]);
+            console.log("yearlyData",yearlyBookingData)
+            const reformattedData = yearlyBookingData.map((yearly)=>({
+                year:yearly._id,
+                total:yearly.totalBookings
+            }))
+            if(reformattedData){
+                return reformattedData
+            }
+        } catch (error) {
+            
+        }
     }
 }
 

@@ -9,6 +9,7 @@ interface IVendorRepository{
     savePhotos(urls:string[],vendorId:string):Promise<Vendor | null>
     saveVideos(urls:string[],vendorId:string):Promise<Vendor | null>
     saveCompanyInfo(vendorId:string,formData:any):Promise<Vendor | null>
+    editCompanyInfo(vendorId:string,formData:any):Promise<Vendor | null>
     getVendorData(vendorId:string):Promise<Vendor | null>
     getVendors():Promise <Vendor[] | null >
     getVendor(vendorId:string):Promise<Vendor | null>
@@ -19,6 +20,7 @@ interface IVendorRepository{
     addEventDate(eventDate:string,vendorId:string):Promise<Vendor | null>
     findUser(userId: Types.ObjectId | undefined):Promise<User | null>
     addServices(serviceData:string[],vendorId:string):Promise<Vendor | null>
+    addPositions(positions:any,vendorId:string):Promise<Vendor | null | any>
 }
 
 export default IVendorRepository

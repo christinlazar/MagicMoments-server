@@ -143,7 +143,39 @@ class adminController{
             
         }
     }
-    
+
+    async getMonthlyBookingData(req:Request,res:Response){
+        try {
+            const result = await this.adminCase.getmontlyBooking()
+            if(result?.success){
+                return res.status(200).json({success:true,monthlyData:result.monthlyData})
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+    async getusersVednors(req:Request,res:Response){
+        try {
+            const result = await this.adminCase.getUsersVendor()
+            if(result?.success){
+                return res.status(200).json({success:true,result:result.result})
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async getYearlyData(req:Request,res:Response){
+        try {
+            console.log("in here")
+            const result = await this.adminCase.getYearlybooking()
+            if(result?.success){
+                return res.status(200).json({success:true,yearlydata:result.yearlyData})
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
 }
 
 export default adminController

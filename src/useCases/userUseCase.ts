@@ -399,6 +399,122 @@ class userUsecase{
             console.error(error)
         }
     }
+
+    async submitReview(review:string,rating:number | string,vendorId:string,token:string){
+        try {
+            const verifiedToken = this.JWTtoken.verifyJWT(token)
+            if(verifiedToken){
+                const userId = verifiedToken.id
+                const result = await this.iuserRepository.submitreview(review,rating,vendorId,userId)
+                if(result != null && result != false){
+                    return {success:true,reviewData:result}
+                }
+                if(result == false){
+                    return {allowed:false}
+                }
+                else{
+                    return {success:false}
+                }
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+    
+    async getreviews(vendorId:string){
+        try {
+            const result = await this.iuserRepository.getreviews(vendorId)
+            if(result != null){
+                return{success:true,reviews:result}
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async getVendorAccordingTolocation(lat:string | number,lng:string | number,searchValue:string){
+            try {
+                const result = await this.iuserRepository.findByCoordinates(lat,lng,searchValue)
+                if(result != null){
+                    return {success:true,vendors:result}
+                }
+            } catch (error) {
+                
+            }
+    }
+
+    async addToWishList(vendorId:string,token:string){
+        try {
+            const isValidUser = this.JWTtoken.verifyJWT(token)
+            if(isValidUser){
+                const userId = isValidUser.id
+                const result = await this.iuserRepository.addtoWishlist(vendorId,userId)
+                if(result == false){
+                    return {success:false}
+                }
+                if(result != null && result != undefined){
+                    return {success:true,user:result}
+                }
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+    async getUserData(token:string){
+        try {
+            const isValidUser = this.JWTtoken.verifyJWT(token)
+            if(isValidUser){
+                const userId = isValidUser.id
+            const result = await this.iuserRepository.getUserData(userId)
+            if(result != null){
+                return {success:true,user:result}
+            }
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async getWishlistData(token:string){
+        try {
+            const isvalidUser = this.JWTtoken.verifyJWT(token)
+            if(isvalidUser){
+                const userId = isvalidUser.id
+                const result = await this.iuserRepository.getWishlist(userId)
+                if(result != null){
+                    return {success:true,wishlistData:result}
+                }
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async removeFromWishlist(token:string,vendorId:string){
+        try {
+            const isValidUser = this.JWTtoken.verifyJWT(token)
+            if(isValidUser){
+                const userId = isValidUser.id
+                const result = await this.iuserRepository.removeFromWishlist(userId,vendorId)
+                if(result != null){
+                    return {success:true}
+                }
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async editreview(review:string,reviewId:string){
+            try {
+                const result = await this.iuserRepository.editReview(review,reviewId)
+                if(result != null){
+                    return {success:true}
+                }
+            } catch (error) {
+                
+            }
+    }
 }
 
 export default userUsecase

@@ -6,6 +6,7 @@ import adminController from '../../adaptors/adminController'
 import authenticateAdmin from '../middleware/adminAuth'
 import acceptanceMail from '../utils/acceptanceMail'
 import rejectingMail from '../utils/rejectanceMail'
+import authenticateVendor from '../middleware/vendorAuth'
 const router = express.Router()
 
 const repository = new adminRepository()
@@ -24,6 +25,9 @@ router.post('/blockVendor',authenticateAdmin,(req,res)=>controller.blockvendor(r
 router.post('/unblockVendor',authenticateAdmin,(req,res)=>controller.Unblockvendor(req,res))
 router.post('/acceptRequest',authenticateAdmin,(req,res)=>controller.acceptVendorRequest(req,res))
 router.post('/rejectRequest',authenticateAdmin,(req,res)=>controller.rejectVendorRequest(req,res))
+router.get('/monthlyBooking',authenticateAdmin,(req,res)=>controller.getMonthlyBookingData(req,res))
+router.get('/getusersvendors',authenticateAdmin,(req,res)=>controller.getusersVednors(req,res))
+router.get('/yearlyBooking',authenticateAdmin,(req,res)=>controller.getYearlyData(req,res))
 
 export default router
 

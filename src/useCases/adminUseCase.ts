@@ -152,6 +152,39 @@ class adminUseCase{
             console.error(error)
         }
     }
+
+    async getmontlyBooking(){
+        try {
+            const result = await this.iAdminRepository.getMonthlyBooking()
+            if(result != null){
+                return {success:true,monthlyData:result}
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async getUsersVendor(){
+        try {
+            const result = await this.iAdminRepository.getUsersAndVendors()
+            if(result != null){
+                return {success:true,result:result}
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async getYearlybooking(){
+        try {
+            const result = await this.iAdminRepository.getYealyBooking()
+            if(result != null){
+                return {success:true,yearlyData:result}
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
 }
 
 

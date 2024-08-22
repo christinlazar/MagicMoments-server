@@ -11,6 +11,8 @@ import { PaymentStatus } from "../../domain/bookings";
 import mongoose, { ObjectId, Types } from "mongoose";
 import reminderMail from "../utils/reminderMail";
 import cron from 'node-cron'
+import reviewInterface from "../../domain/review";
+import reviewModel from "../database/reviewModel";
 
 const remindermail = new reminderMail()
 class userRepository implements IuserRepository{
@@ -148,14 +150,16 @@ class userRepository implements IuserRepository{
 
     async confirmBooking(bookingId: string,amountPaid:string): Promise<bookingInt | null | undefined | boolean> {
         try {
-            const bookingData = await bookingRequestModel.findOne({_id:bookingId})
+            const bookingData:any = await bookingRequestModel.findOne({_id:bookingId})
+            const moneyPaid = Math.floor((parseInt(amountPaid) * bookingData?.noOfDays)/3)
+            let money = moneyPaid 
             const dataToConfirmBooking = {
                 vendorId:bookingData?.vendorId,
                 userId:bookingData?.userId,
                 clientName:bookingData?.userName,
                 startingDate:bookingData?.startingDate,
                 noOfDays:bookingData?.noOfDays,
-                amountPaid:amountPaid,
+                amountPaid:moneyPaid,
                 paymentStatus:PaymentStatus.Completed
             }
             const vendor = await vendorModel.findOne({_id:dataToConfirmBooking.vendorId})
@@ -259,6 +263,139 @@ class userRepository implements IuserRepository{
             const vendor = await vendorModel.findOne({_id:vendorId})
             console.log("vendor",vendor)
             return vendor
+        } catch (error) {
+            console.error(error)
+            return null
+        }
+    }
+
+    async submitreview(review: string, rating: number | string, vendorId: string, userId: string): Promise<reviewInterface | null | boolean> {
+        try {
+
+            const isAllowed = await bookingModel.findOne({userId:userId,vendorId:vendorId})
+            if(isAllowed == null){
+                return false
+            }
+            console.log("isAllowedddddddddd",isAllowed)
+            const reviewData = {
+                vendorId,
+                userId,
+                review,
+                rating
+            }
+            const newReview = new reviewModel(reviewData)
+            const reviews  = await newReview.save()
+            if(reviews != null){
+            return reviews
+            }else{
+                return null
+            }
+        } catch (error) {
+            console.error(error)
+            return null
+        }
+    }
+
+    async getreviews(vendorId:string): Promise<reviewInterface[] | null> {
+        try {
+            console.log(vendorId)
+            const reviews  = await reviewModel.find({vendorId:vendorId}).populate('userId')
+            console.log("reviews is",reviews)
+            return reviews
+        } catch (error) {
+            console.error(error)
+            return null
+        }
+    }
+
+    async findByCoordinates(lat:  number, lng: number,searchValue:string): Promise<Vendor[] | null | undefined> {
+        try {
+            let maxDistance = 25 * 1000
+            console.log(typeof(lat),typeof(lng))
+            console.log(lat,lng)
+            let vendors = await vendorModel.aggregate([
+                {
+                    $geoNear:{
+                        near:{
+                            type:'Point',
+                            coordinates:[lat,lng]
+                        },
+                        distanceField:'distance',
+                        maxDistance:maxDistance,
+                        spherical:true,
+                        query:{}
+                    },
+                }
+            ])
+
+            if (vendors.length === 0) {
+               const pl = searchValue.split(',')[0]
+               console.log("pl is",pl)
+                vendors = await vendorModel.find({
+                    companyLocation: { $regex: pl, $options: 'i' } 
+                });
+                return vendors
+            }
+            console.log("vendors issssssssssss",vendors)
+            return vendors
+        } catch (error) {
+            console.error(error)
+            return null
+        }
+    }
+
+    async addtoWishlist(vendorId: string, userId: string): Promise<User | null | undefined | boolean> {
+        try {
+            const userData = await userModel.findOne({_id:userId})
+            let wisharray = userData?.wishlist
+            let isExists = wisharray?.find((wish:any)=>wish == vendorId)
+            if(isExists){
+                return false
+            }
+            const result = await userModel.findByIdAndUpdate({_id:userId},{$push:{wishlist:vendorId}},{new:true})
+            if(result){
+                return result
+            }
+        } catch (error) {
+            console.error(error)
+            return null
+        }
+    }
+
+    async getUserData(userId: string): Promise<User | null> {
+        try {
+            const result = await userModel.findOne({_id:userId})
+            return result
+        } catch (error) {
+            console.error(error)
+            return null
+        }
+    }
+
+    async getWishlist(userId: string): Promise<any | null> {
+        try {
+            const result = await userModel.findOne({_id:userId}).populate('wishlist')
+            const wishlist = result?.wishlist
+            return wishlist
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async removeFromWishlist(userId: string, vendorId: string): Promise<User | null | undefined> {
+        try {
+            const result = await userModel.findByIdAndUpdate({_id:userId},{$pull:{wishlist:vendorId}},{new:true})
+            return result
+        } catch (error) {
+            console.error(error)
+            return null
+        }
+    }
+
+    async editReview(review: string, reviewId: string): Promise<reviewInterface | null> {
+        try {
+            const result = await reviewModel.findOneAndUpdate({_id:reviewId},{$set:{review:review}},{new:true})
+            return result
         } catch (error) {
             console.error(error)
             return null
