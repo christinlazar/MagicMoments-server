@@ -8,6 +8,8 @@ import vendorRoutes from '../routes/vendorRoute'
 import chatRoutes from '../routes/chatRoutes'
 import bodyParser from 'body-parser'
 import socketServer from './socketServer'
+import helmet from 'helmet';
+
 export const createServer = () =>{
     try {
         const app = express()
@@ -15,11 +17,14 @@ export const createServer = () =>{
         app.use(express.urlencoded({extended:true}))
         app.use(bodyParser.json())
         app.use(cookieParser())
+
+     
         app.use(cors({
-                origin:'http://localhost:3000',
+                origin:'https://magic-moments-client.vercel.app',
                 methods:'GET,HEAD,PUT,PATCH,POST,DELETE',
                 credentials:true,
                 optionsSuccessStatus:200}))
+                                
         app.use('/api/user',userRoutes)
         app.use('/api/admin',adminRoutes)
         app.use('/api/vendor',vendorRoutes)

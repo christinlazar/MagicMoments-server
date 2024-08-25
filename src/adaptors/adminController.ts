@@ -14,7 +14,7 @@ class adminController{
            if(result?.success){
             const refreshToken = result.refreshToken
             const accessToken = result.refreshToken
-            res.cookie('refreshToken',refreshToken,{httpOnly:true})
+            res.cookie('refreshToken',refreshToken,{httpOnly:true,secure:true,sameSite:'none'})
             return res.status(200).json({success:true,accessToken,message:"login successfull"})
            }else{
             return res.status(401).json({success:false,message:"You are not authorised"})

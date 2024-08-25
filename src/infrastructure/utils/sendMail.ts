@@ -14,6 +14,7 @@ class sendMail{
         })
     }
     sendMail(name:string,email:string,verificationCode:string):void{
+        console.log(verificationCode)
         const emailContent = `
 Dear ${name},
 

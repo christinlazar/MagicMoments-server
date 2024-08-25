@@ -62,7 +62,7 @@ class userController{
     }
     async userLogin(req:Request,res:Response){
         try {
-           
+           console.log("Im here to login")
             const {email,password} = req.body
            
             const isValidUser = await this.usercase.userLogin(email,password)
@@ -75,7 +75,7 @@ class userController{
             const accessToken= isValidUser?.accessToken
             const refreshToken = isValidUser?.refreshToken
          
-            res.cookie('refreshToken',refreshToken,{httpOnly:true,maxAge: 7 * 24 * 60 * 60 * 1000})
+            res.cookie('refreshToken',refreshToken,{httpOnly:true,secure:true,sameSite:'none',maxAge: 7 * 24 * 60 * 60 * 1000})
             res.status(200).json({accessToken,success:true})
         } catch (error) {
             console.log(error)
@@ -117,8 +117,8 @@ class userController{
             const {email} = req.body
             const result =  await  this.usercase.sendForgotmail(email)
             if(result?.mailSend){
-                res.cookie('forgotPasswordOtp',result?.otp,{httpOnly:true})
-                res.cookie('email',email,{httpOnly:true})
+                res.cookie('forgotPasswordOtp',result?.otp,{httpOnly:true,secure:true,sameSite:'none'})
+                res.cookie('email',email,{httpOnly:true,secure:true,sameSite:'none'})
                 res.status(200).json({success:true,forgotmailSend:true})
             }else{
                 res.status(404).json({success:false,forgotmailSend:false})
@@ -187,9 +187,9 @@ class userController{
             const advAmount = JSON.stringify(advancePayment)
             const result = await this.usercase.makeBookingPayment(companyName,vendorId,advAmount,req.body,bookingData)
             if(result){
-                res.cookie('bookingId',bookingData?._id,{httpOnly:true})
-                res.cookie('Amount',amount,{httpOnly:true})
-                res.cookie('paymentId',result.id,{httpOnly:true})
+                res.cookie('bookingId',bookingData?._id,{httpOnly:true,secure:true,sameSite:'none'})
+                res.cookie('Amount',amount,{httpOnly:true,secure:true,sameSite:'none'})
+                res.cookie('paymentId',result.id,{httpOnly:true,secure:true,sameSite:'none'})
                res.status(200).json({success:true,result,bookingData})
             }
         } catch (error) {
@@ -256,9 +256,9 @@ class userController{
             const result = await this.usercase.confirmPayment(bookingId,amountPaid,paymentId)
             
             if(result?.success){
-               res.redirect('http://localhost:3000/paymentSuccess')  
+               res.redirect('https://magic-moments-client.vercel.app/paymentSuccess')  
             }else if(result?.OtherUserBooked){
-               res.redirect('http://localhost:3000/paymentFailed?otherUsedBooked=true')  
+               res.redirect('https://magic-moments-client.vercel.app/paymentFailed?otherUsedBooked=true')  
             }
         } catch (error) {
             console.error(error)
@@ -428,7 +428,7 @@ class userController{
             if(result?.success){
                 return res.status(200).json({success:true,user:result.user})
             }else{
-                return res.json({success:false})
+                return res.status(400).json({success:false,userData:false})
             }
         } catch (error) {
             console.error(error)
@@ -526,6 +526,7 @@ class userController{
 
     async gSignUp(req:Request,res:Response){
         try {
+            console.log("Im hereeee in GSIGNUP")
             const {tokenResponse} = req.body
            const resultt = await axios.get('https://www.googleapis.com/oauth2/v3/userinfo',{headers:{
             'Authorization':`Bearer ${tokenResponse.access_token}`
@@ -533,6 +534,7 @@ class userController{
            const name = resultt.data.given_name +" "+resultt.data.family_name
            const email = resultt.data.email
            const password = '@magicmoments'
+            console.log(name,email,password)
             const result = await this.usercase.googleSignup(name,email,password)
             return res.status(200).json(result)
         } catch (error) {

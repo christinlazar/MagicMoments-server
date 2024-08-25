@@ -108,8 +108,9 @@ class userUsecase{
     }
     async userLogin(email:string,password:string){
             try {
-               
+               console.log("email,password",email,password)
                 const isValidUser = await this.iuserRepository.findByEmail(email)
+                console.log("am I a valid user?",isValidUser)
                 if(isValidUser){
                     if(isValidUser.isBlocked != true){
                       
@@ -548,6 +549,7 @@ class userUsecase{
 
     async googleSignup(name:string,email:string,password:string){
         try {
+            console.log("The emaillll",email)
             const existingUser = await this.iuserRepository.findByEmail(email)
             if(existingUser){
                 return {

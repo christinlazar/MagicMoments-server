@@ -45,6 +45,7 @@ class vendorController{
     async verifyVendorLogin(req:Request,res:Response){
         try {
             const {email,password} = req.body
+            console.log(email,password)
             const result = await this.vendorCase.verifyLogin(email,password)
             if(result?.message2){
                 return res.json({message2:result.message2})
@@ -56,7 +57,7 @@ class vendorController{
             }  else if(result.success){
                 const refreshToken = result.refreshToken
                 const accessToken = result.accessToken
-                res.cookie('refreshToken',refreshToken,{httpOnly:true,maxAge: 7 * 24 * 60 * 60 * 1000})
+                res.cookie('refreshToken',refreshToken,{httpOnly:true,secure:true,sameSite:'none',maxAge: 7 * 24 * 60 * 60 * 1000})
                 res.status(200).json({success:true,accessToken})
             }
 
