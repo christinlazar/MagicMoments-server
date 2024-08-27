@@ -12,42 +12,69 @@ import bookingModel from "../database/booking";
 
 class adminRepository implements IAdminRepository{
     async findByEmail(email: string):Promise<Admin | null> {
-        const adminExists = await AdminModel.findOne({email:email})
-        if(adminExists){
-            return adminExists
-        }else{
+        try {
+            const adminExists = await AdminModel.findOne({email:email})
+            if(adminExists){
+                return adminExists
+            }else{
+                return null
+            }
+        }catch (error:unknown) {
+            console.error
             return null
         }
+       
     }
     async findUsers(): Promise<User[] | null> {
-        const  users = await userModel.find({})
-        if(users){
-            return users
-        }else{
-            return null
+        try {
+            const  users = await userModel.find({})
+            if(users){
+                return users
+            }else{
+                return null
+            }
+        } catch (error:unknown) {
+                console.error(error)
+                return null
         }
+       
     }
 
     async blockuser(userId:string):Promise<null | User>{
+        try {
             const res = await userModel.findOneAndUpdate({_id:userId},{$set:{isBlocked:true}})
             if(res){
                 return res
             }else{
                 return null
             }
+        } catch (error) {
+            console.error(error)
+            return null
+        }
     }
     
     async unblockuser(userId:string):Promise<null | User>{
-        const res = await userModel.findOneAndUpdate({_id:userId},{$set:{isBlocked:false}})
-        if(res){
-            return res
-        }else{
+        try {
+            const res = await userModel.findOneAndUpdate({_id:userId},{$set:{isBlocked:false}})
+            if(res){
+                return res
+            }else{
+                return null
+            }
+        } catch (error:unknown) {
+            console.error(error)
             return null
         }
     }
     async findVendors(): Promise<Vendor[] | null> {
-        const vendors = await vendorModel.find({})
-        return vendors
+        try {
+            const vendors = await vendorModel.find({})
+            return vendors 
+        } catch (error) {
+            console.error(error)
+            return null
+        }
     }
 
      async blockVendor(vendorId: string): Promise<Vendor | null> {
@@ -60,27 +87,47 @@ class adminRepository implements IAdminRepository{
     }
 
      async unblockVendor(vendorId: string): Promise<Vendor | null> {
-        const unblocked = await vendorModel.findOneAndUpdate({_id:vendorId},{$set:{isBlocked:false}})
-        if(unblocked){
-            return unblocked
-        }else{
+        try {
+            const unblocked = await vendorModel.findOneAndUpdate({_id:vendorId},{$set:{isBlocked:false}})
+            if(unblocked){
+                return unblocked
+            }else{
+                return null
+            }
+        } catch (error) {
+            console.error(error)
             return null
         }
     }
 
      async acceptRequest(vendorId: string): Promise<Vendor | null> {
-        const acceptedRequest = await vendorModel.findOneAndUpdate({_id:vendorId},{$set:{isAccepted:AcceptanceStatus.Accepted}})
-        return acceptedRequest
+        try {
+            const acceptedRequest = await vendorModel.findOneAndUpdate({_id:vendorId},{$set:{isAccepted:AcceptanceStatus.Accepted}})
+            return acceptedRequest
+        } catch (error) {
+            console.error(error)
+            return null
+        }
     }
 
      async rejectRequest(vendorId: string): Promise<Vendor | null> {
-        const rejectRequest = await vendorModel.findOneAndUpdate({_id:vendorId},{$set:{isAccepted:AcceptanceStatus.Rejected}})
-        return rejectRequest
+        try {
+            const rejectRequest = await vendorModel.findOneAndUpdate({_id:vendorId},{$set:{isAccepted:AcceptanceStatus.Rejected}})
+            return rejectRequest
+        } catch (error) {
+            console.error(error)
+            return null
+        }
     }
 
      async deleteVendor(vendorId: string): Promise<Vendor | null> {
-        const deletedVendor = await vendorModel.findOneAndDelete({_id:vendorId})
-        return deletedVendor
+        try {
+            const deletedVendor = await vendorModel.findOneAndDelete({_id:vendorId})
+            return deletedVendor
+        } catch (error) {
+            console.error(error)
+            return null
+        }
     }
 
     async getMonthlyBooking(): Promise<bookingInt[] | null | any> {

@@ -7,6 +7,7 @@ import bookingAcceptanceMail from "../infrastructure/utils/bookingAcceptanceMail
 import hashPassword from "../infrastructure/utils/hashPassword";
 import jwt from 'jsonwebtoken'
 import cloudinary from "../infrastructure/utils/cloudinary";
+import { Express } from "express";
 
 class vendorUseCase{
     private ivendorRepository:IVendorRepository
@@ -74,6 +75,7 @@ class vendorUseCase{
                 return {expired:true,message:'otp has been expired'}
             }else{
                 const realOtp = decodedToken.otp
+                console.log("real",realOtp,"decoded",decodedToken.otp)
                 if(realOtp == otp){
                     const hashedPassword = await this.hashPassword.createHash(decodedToken.vendorInfo.password)
                     decodedToken.vendorInfo.password = hashedPassword
@@ -175,6 +177,7 @@ class vendorUseCase{
 
     async addVideosInDB(videoFiles:Express.Multer.File[],token:string){
         try {
+            
             const decoded = await this.jwtToken.verifyJWT(token)
             if(decoded == null){
                 return
@@ -369,6 +372,36 @@ class vendorUseCase{
             console.error(error)
         }
     }
+
+    async deleteService(service:string,token:string){
+        try {
+            const isValidToken = this.jwtToken.verifyJWT(token)
+            if(isValidToken){
+                const vendorId = isValidToken.id
+                const result = await this.ivendorRepository.deleteService(service,vendorId)
+                if(result){
+                    return {serviceDeleted:true}
+                }
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async sendForgetMail(email:string){
+        try {
+            const result = await this.ivendorRepository.findByEmail(email)
+            if(result != null){
+                const otp = await this.otpGenerate.generateOtp(4)
+                this.sendMail.sendMail(result.companyName,result.companyEmail,otp)
+                return {success:true,otp:otp}
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+ 
 
 
 

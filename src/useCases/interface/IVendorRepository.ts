@@ -21,6 +21,7 @@ interface IVendorRepository{
     findUser(userId: Types.ObjectId | undefined):Promise<User | null>
     addServices(serviceData:string[],vendorId:string):Promise<Vendor | null>
     addPositions(positions:any,vendorId:string):Promise<Vendor | null | any>
+    deleteService(service:string,vendorId:string):Promise<boolean | null>
 }
 
 export default IVendorRepository

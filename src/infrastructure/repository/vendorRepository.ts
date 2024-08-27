@@ -27,7 +27,7 @@ class vendorRepository implements IVendorRepository{
         }
     }
 
-    async  saveVendor(vendor: Vendor): Promise<Vendor | null> {
+    async  saveVendor(vendor:Vendor): Promise<Vendor | null> {
         try {
             const newVendor = new vendorModel(vendor)
             await newVendor.save()
@@ -237,6 +237,18 @@ class vendorRepository implements IVendorRepository{
             return null
         }
     }
+
+    async deleteService(service: string, vendorId: string): Promise<boolean | null> {
+        try {
+            await vendorModel.findByIdAndUpdate({_id:vendorId},{$pull:{services:service}})
+            return true
+        } catch (error) {
+            console.error(error)
+            return null
+        }
+    }
+
+  
 
 
 }

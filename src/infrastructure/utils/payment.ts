@@ -32,8 +32,8 @@ class makePayment implements IMakePayment {
         ]
         try {
            const session = await stripe.checkout.sessions.create({
-            success_url:`http://localhost:5000/api/user/confirmPayment` ,
-            cancel_url :`http://localhost:5000/api/user/paymentFailed`,
+            success_url:`https://adorehome.site/api/user/confirmPayment` ,
+            cancel_url :`https://adorehome.site/api/user/paymentFailed`,
             line_items:line_items,
             mode:'payment', 
            })

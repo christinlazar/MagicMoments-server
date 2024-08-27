@@ -6,8 +6,11 @@ import sendMail from "../infrastructure/utils/sendMail";
 import hashPassword from "../infrastructure/utils/hashPassword";
 import IMakePayment from "./interface/IMakePayment";
 import makePayment from "../infrastructure/utils/payment";
+import dotenv from 'dotenv'
+dotenv.config()
 
 import jwt from 'jsonwebtoken'
+
 import bookingModel from "../infrastructure/database/booking";
 class userUsecase{
     private  iuserRepository:IuserRepository;

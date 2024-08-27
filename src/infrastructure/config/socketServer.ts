@@ -12,7 +12,7 @@ function socketServer(server:any){
 
      io = new Server(server,{
         cors:{
-           origin:["https://magic-moments-client.vercel.app"],
+           origin:["https://magic-moments-client.vercel.app","http://localhost:3000"],
            methods:["GET","POST"]
         }
     });

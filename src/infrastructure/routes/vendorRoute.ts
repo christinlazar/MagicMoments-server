@@ -37,6 +37,9 @@ router.post('/acceptBookingrequest',authenticateVendor,(req,res)=>controller.acc
 router.get('/fetchBookings',authenticateVendor,(req,res)=>controller.getBookings(req,res))
 router.post('/addServices',authenticateVendor,(req,res)=>controller.addServices(req,res))
 router.post('/addLongLang',authenticateVendor,(req,res)=>controller.addLongitudeLangitude(req,res))
+router.post('/deleteService',authenticateVendor,(req,res)=>controller.deleteService(req,res))
+router.post('/sendForgetMail',(req,res)=>controller.sendForgetEmail(req,res))
+router.post('/verifyForgetOtp',(req,res)=>controller.verifyForgetPasswordOtp(req,res))
 
 
 

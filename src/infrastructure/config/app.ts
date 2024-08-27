@@ -20,7 +20,7 @@ export const createServer = () =>{
 
      
         app.use(cors({
-                origin:'https://magic-moments-client.vercel.app',
+                origin:['https://magic-moments-client.vercel.app',"http://localhost:3000"],
                 methods:'GET,HEAD,PUT,PATCH,POST,DELETE',
                 credentials:true,
                 optionsSuccessStatus:200}))

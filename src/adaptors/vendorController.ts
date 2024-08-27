@@ -284,6 +284,50 @@ class vendorController{
             console.error(error)
         }
     }
+
+    async deleteService(req:Request,res:Response){
+        try {
+            const {service} = req.body
+            const token = req.headers.authorization?.split(' ')[1] as string
+            const result = await this.vendorCase.deleteService(service,token)
+            if(result?.serviceDeleted){
+                return res.status(200).json({success:true,deletedService:true})
+            }
+        } catch (error) {
+            if(error instanceof Error){
+                console.error(error)
+            }
+        }
+    }
+
+    async sendForgetEmail(req:Request,res:Response){
+        try { 
+            const {email} = req.body
+            const result = await this.vendorCase.sendForgetMail(email)
+            if(result){
+                res.cookie('forgotPasswordOtp',result?.otp,{httpOnly:true,secure:true,sameSite:'none'})
+                res.cookie('email',email,{httpOnly:true,secure:true,sameSite:'none'})
+                return res.status(200).json({emailSend:true})
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async verifyForgetPasswordOtp(req:Request,res:Response){
+        try {
+            const {otp} = req.body
+            const orginalOtp = req.cookies.forgotPasswordOtp
+            const email = req.cookies.email
+            if(otp == orginalOtp){
+           return res.status(200).json({success:true})
+            }else{
+                return res.json({success:false})
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
     
 }
 

@@ -9,7 +9,8 @@
     "moduleResolution": "node",
     "esModuleInterop": true,
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    "types":["Multer"]
   },
   "include": ["src/**/*"]
 }
