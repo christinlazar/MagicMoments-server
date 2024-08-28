@@ -248,6 +248,16 @@ class vendorRepository implements IVendorRepository{
         }
     }
 
+    async updatePassword(password:string,email:string): Promise<boolean> {
+        try {
+            const upatedData = await vendorModel.findOneAndUpdate({companyEmail:email},{$set:{password:password}},{new:true})
+            return true
+        } catch (error) {
+            console.error(error)
+            return false
+        }
+    }
+
   
 
 

@@ -401,6 +401,18 @@ class vendorUseCase{
         }
     }
 
+    async confirmChangePassword(password:string,email:string){
+        try {
+            const hashedPassword = await this.hashPassword.createHash(password)
+            const result = await this.ivendorRepository.updatePassword(hashedPassword,email)
+            if(result){
+                return {updated:true}
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
  
 
 

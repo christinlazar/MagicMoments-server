@@ -328,6 +328,32 @@ class vendorController{
             console.error(error)
         }
     }
+
+    async confirmChnagingPassword(req:Request,res:Response){
+        try {
+            const {password,newPassword} = req.body
+            const email = req.cookies.email
+            const otp = req.cookies.forgotPasswordOtp
+            console.log("e",email,"o",otp)
+            if(password == newPassword){
+                if(email.trim() != '' && otp.trim() != ''){
+                    const result = await this.vendorCase.confirmChangePassword(password,email)
+                    if(result?.updated){
+                        res.clearCookie('email',{expires: new Date(0),path:'/'})
+                        res.clearCookie('forgotPasswordOtp',{ expires: new Date(0), path: '/' })
+                        return res.status(200).json({success:true,updated:true})
+                    }
+                }else{
+                    return res.json({authorised:false})
+                }
+            }else{
+
+            }
+           
+        } catch (error) {
+            console.error(error)
+        }
+    }
     
 }
 

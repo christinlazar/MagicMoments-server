@@ -22,6 +22,7 @@ interface IVendorRepository{
     addServices(serviceData:string[],vendorId:string):Promise<Vendor | null>
     addPositions(positions:any,vendorId:string):Promise<Vendor | null | any>
     deleteService(service:string,vendorId:string):Promise<boolean | null>
+    updatePassword(password:string,email:string):Promise<boolean>
 }
 
 export default IVendorRepository

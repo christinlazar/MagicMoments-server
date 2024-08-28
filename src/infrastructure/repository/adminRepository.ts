@@ -166,7 +166,7 @@ class adminRepository implements IAdminRepository{
                     }
                 }
             ])
-            const revenue = totalRevenue[0].totalAmount
+            const revenue = totalRevenue[0]?.totalAmount
             return {vendors,users,revenue}
         } catch (error) {
             console.error(error)

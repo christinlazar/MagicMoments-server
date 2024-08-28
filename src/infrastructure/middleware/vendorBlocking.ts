@@ -1,22 +1,22 @@
-
 import { Request,Response,NextFunction } from "express";
 import JWTtoken from "../utils/JWTtoken";
 const jwtToken = new JWTtoken()
-import { userModel } from "../database/userModel";
 
-const userBlockingMiddleware = async (req:Request, res:Response,next:NextFunction) => {
+import vendorModel from "../database/vendorModel";
+
+const vendorBlockingMiddleware = async (req:Request, res:Response,next:NextFunction) => {
   try {
     const accessToken = req.headers.authorization?.split(' ')[1] as string
     const isValidToken =  jwtToken.verifyJWT(accessToken)
     if(isValidToken){
-        const userId = isValidToken.id
-        const user = await userModel.findOne({_id:userId})
-        console.log("user",user)
-        console.log("userblocked",user?.isBlocked)
-        if(user && user.isBlocked == false){
+        const vendorId = isValidToken.id
+        const vendor = await vendorModel.findOne({_id:vendorId})
+        console.log("vendor",vendor)
+        console.log("userblocked",vendor?.isBlocked)
+        if(vendor && vendor.isBlocked == false){
             next()
         }else{
-            return res.status(401).json({userBlocked:true})
+            return res.status(401).json({vendorBlocked:true})
         }
     }
   } catch (error) {
@@ -25,4 +25,4 @@ const userBlockingMiddleware = async (req:Request, res:Response,next:NextFunctio
   }
 };
 
-export default userBlockingMiddleware
+export default vendorBlockingMiddleware

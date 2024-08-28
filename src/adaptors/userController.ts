@@ -3,7 +3,7 @@ import User from '../domain/user'
 import userUsecase from '../useCases/userUseCase'
 // import Api from '../infrastructure/utils/axios'
 import axios from 'axios'
-import { Error } from 'mongoose'
+
 class userController{
     private usercase:userUsecase
     constructor(usercase:userUsecase){
@@ -106,7 +106,7 @@ class userController{
                const token = req.headers.authorization?.split(' ')[1]
                 const result = await this.usercase.verifyToResend(token as string)
                 const resendedToken:string | undefined = result?.token
-                res.status(200).json({success:true,resendedToken})
+                return res.status(200).json({success:true,resendedToken})
             } catch (error) {
                 console.log(error)
             }
@@ -119,9 +119,9 @@ class userController{
             if(result?.mailSend){
                 res.cookie('forgotPasswordOtp',result?.otp,{httpOnly:true,secure:true,sameSite:'none'})
                 res.cookie('email',email,{httpOnly:true,secure:true,sameSite:'none'})
-                res.status(200).json({success:true,forgotmailSend:true})
+                return res.status(200).json({success:true,forgotmailSend:true})
             }else{
-                res.status(404).json({success:false,forgotmailSend:false})
+                res.json({success:false,forgotmailSend:false})
             }
         } catch (error) {
             console.error(error)
@@ -170,9 +170,9 @@ class userController{
             const result = await this.usercase.getThatVendor(vendorId)
           
             if(result?.success){
-               res.status(200).json({success:true,data:result?.data})
+               return res.status(200).json({success:true,data:result?.data})
             }else{
-                res.json({success:false})
+                return res.json({success:false})
             }
         } catch (error) {
             console.error(error)
@@ -237,9 +237,9 @@ class userController{
             const token = req.headers.authorization?.split(' ')[1] as string
             const result = await this.usercase.isbookingExisting(token,vendorId)
             if(result?.success == false){
-                res.status(400).json({success:false})
+                return res.json({success:false})
             }else{
-                res.status(200).json({success:true})
+               return  res.status(200).json({success:true})
             }
         } catch (error) {
             console.error(error)
@@ -426,8 +426,10 @@ class userController{
             const token = req.headers.authorization?.split(' ')[1] as string
             const result = await this.usercase.getUserData(token)
             if(result?.success){
+                console.log("I think error is here")
                 return res.status(200).json({success:true,user:result.user})
             }else{
+                console.log("I think error is here2")
                 return res.status(400).json({success:false,userData:false})
             }
         } catch (error) {

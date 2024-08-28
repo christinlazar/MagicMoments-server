@@ -181,7 +181,7 @@ class userUsecase{
     async sendForgotmail(email:string){
         try {
             const isExistingUser = await this.iuserRepository.findByEmail(email)
-            if(isExistingUser){
+            if(isExistingUser?.email == email){
                 const otp = await this.otpGenerate.generateOtp(4)
                  this.sendMail.sendMail(isExistingUser.name,email,otp)
                 return {mailSend:true,otp}
