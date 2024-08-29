@@ -17,8 +17,17 @@ import reviewModel from "../database/reviewModel";
 const remindermail = new reminderMail()
 class userRepository implements IuserRepository{
 
-     async findByEmail(email:string,phone:number){
+     async findByEmail(email:string,phone:number ){
         try {
+            if(phone == undefined){
+                const userExists = await userModel.findOne({$or:[{email:email}]});
+                if(userExists){
+                    return userExists
+                }else{
+                    return false
+                }
+            }
+            console.log("email",email,"phone",phone)
             const userExists = await userModel.findOne({$or:[{email:email},{phone:phone}]});
             if(userExists){
                 return userExists

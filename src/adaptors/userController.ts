@@ -66,6 +66,9 @@ class userController{
             const {email,password} = req.body
            
             const isValidUser = await this.usercase.userLogin(email,password)
+            if(isValidUser?.gAuth == false){
+                return res.json({gAuthFailed:true})
+            }
             if(isValidUser?.blocked){
                 return res.json({blocked:true})
             }

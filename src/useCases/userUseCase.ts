@@ -114,25 +114,29 @@ class userUsecase{
                console.log("email,password",email,password)
                 const isValidUser = await this.iuserRepository.findByEmail(email)
                 console.log("am I a valid user?",isValidUser)
-                if(isValidUser){
-                    if(isValidUser.isBlocked != true){
-                      
-                        let isValidPassword = await this.hashpassword.compare(password,isValidUser.password)
-                      
-                        if(isValidPassword){
-                       
-                            const accessToken = this.JWTtoken.createJWT(isValidUser._id as string,"user")
-                            const refreshToken = this.JWTtoken.createRefreshToken(isValidUser._id )
+                if(isValidUser == false){
+                    return {gAuth:false}
+                }else{
+                    if(isValidUser){
+                        if(isValidUser.isBlocked != true){
+                            let isValidPassword = await this.hashpassword.compare(password,isValidUser.password)
+                          
+                            if(isValidPassword){
                            
-                            return {success:true,accessToken,refreshToken}
+                                const accessToken = this.JWTtoken.createJWT(isValidUser._id as string,"user")
+                                const refreshToken = this.JWTtoken.createRefreshToken(isValidUser._id )
+                               
+                                return {success:true,accessToken,refreshToken}
+                            }
+                        }else{
+                          
+                            return {blocked:true,message:'user has been blocked'}
                         }
                     }else{
-                      
-                        return {blocked:true,message:'user has been blocked'}
+                        return {success:false}
                     }
-                }else{
-                    return {success:false}
                 }
+            
             } catch (error) {
                 console.log(error)
             }

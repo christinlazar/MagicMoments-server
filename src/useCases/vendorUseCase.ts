@@ -393,8 +393,10 @@ class vendorUseCase{
             const result = await this.ivendorRepository.findByEmail(email)
             if(result != null){
                 const otp = await this.otpGenerate.generateOtp(4)
-                this.sendMail.sendMail(result.companyName,result.companyEmail,otp)
+                 this.sendMail.sendMail(result.companyName,result.companyEmail,otp)
                 return {success:true,otp:otp}
+            }else{
+                return {success:false,vendorFound:false}
             }
         } catch (error) {
             console.error(error)

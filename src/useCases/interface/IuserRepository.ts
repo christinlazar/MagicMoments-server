@@ -5,7 +5,7 @@ import bookingInt from "../../domain/bookings";
 import reviewInterface from "../../domain/review";
 import { Types } from "mongoose";
 interface IuserRepository{
-    findByEmail(email:string,phone?:number):Promise<User | null>,
+    findByEmail(email:string,phone?:number):Promise<User | null | any>,
     saveUser(user:User) : Promise<User | null>
     saveHashedPassword(password:string,email:string):Promise<User | null>
     getVendors():Promise <Vendor[] | null >

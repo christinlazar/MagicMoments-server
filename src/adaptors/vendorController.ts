@@ -304,10 +304,12 @@ class vendorController{
         try { 
             const {email} = req.body
             const result = await this.vendorCase.sendForgetMail(email)
-            if(result){
-                res.cookie('forgotPasswordOtp',result?.otp,{httpOnly:true,secure:true,sameSite:'none'})
+            if(result?.success){
+                res.cookie('Otp',result.otp,{httpOnly:true,secure:true,sameSite:'none'})
                 res.cookie('email',email,{httpOnly:true,secure:true,sameSite:'none'})
                 return res.status(200).json({emailSend:true})
+            }else {
+                return res.json({userFound:false})
             }
         } catch (error) {
             console.error(error)
@@ -317,10 +319,11 @@ class vendorController{
     async verifyForgetPasswordOtp(req:Request,res:Response){
         try {
             const {otp} = req.body
-            const orginalOtp = req.cookies.forgotPasswordOtp
-            const email = req.cookies.email
+            const orginalOtp = req?.cookies?.Otp
+            console.log("otp",otp,"ogOtp",orginalOtp)
+            const email = req?.cookies?.email
             if(otp == orginalOtp){
-           return res.status(200).json({success:true})
+                return res.status(200).json({success:true})
             }else{
                 return res.json({success:false})
             }

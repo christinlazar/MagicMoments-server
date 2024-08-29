@@ -8,7 +8,7 @@ import vendorRoutes from '../routes/vendorRoute'
 import chatRoutes from '../routes/chatRoutes'
 import bodyParser from 'body-parser'
 import socketServer from './socketServer'
-import helmet from 'helmet';
+
 
 export const createServer = () =>{
     try {
@@ -20,7 +20,7 @@ export const createServer = () =>{
 
      
         app.use(cors({
-                origin:['https://magic-moments-client.vercel.app',"http://localhost:3000"],
+                origin:['https://magic-moments-client.vercel.app',"http://localhost:3000","https://adorehome.site/api"],
                 methods:'GET,HEAD,PUT,PATCH,POST,DELETE',
                 credentials:true,
                 optionsSuccessStatus:200}))

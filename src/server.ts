@@ -1,8 +1,8 @@
 import 'reflect-metadata';
 import {createServer} from './infrastructure/config/app'
 import {connectDB} from './infrastructure/config/connectDB'
-// import dotenv from 'dotenv'
-// dotenv.config()
+import dotenv from 'dotenv'
+dotenv.config()
 require('dotenv').config()
 
 
